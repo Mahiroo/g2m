@@ -1,0 +1,16 @@
+<button mat-button (click)="contents.save()" [disabled]="!getUpdated()">
+    <mat-icon>save</mat-icon>
+    <span>保存</span>
+</button>
+<button mat-button (click)="contents.createNewCharacter()">
+    <mat-icon>person_add</mat-icon>
+    <span>新規作成</span>
+</button>
+<button mat-button (click)="contents.openCharacterListDialog()">
+    <mat-icon>people</mat-icon>
+    <span>キャラクター一覧</span>
+</button>
+<button mat-button (click)="contents.openDataManagementDialog()">
+    <mat-icon>import_export</mat-icon>
+    <span>データ管理</span>
+</button>

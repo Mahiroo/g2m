@@ -1,0 +1,29 @@
+<header mat-dialog-title>
+    <span>所有アイテム検索</span>
+    <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="[5,10,15]" [length]="items.length" [showFirstLastButtons]="true"
+        (page)="changePage($event)"></mat-paginator>
+</header>
+
+<mat-dialog-content>
+    <section class="item-list-pane">
+        <g2-item-list class="inventory-list" [columns]="columns" [items]="items" [pageSize]="pageSize" [pageIndex]="pageIndex" [readonly]="true"
+            [selectable]="true" [highlightSkillRegex]="filter.regexSkillName"></g2-item-list>
+    </section>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <section class="actions-left">
+        <button mat-raised-button color="primary" (click)="openItemFilterDialog()">
+            <mat-icon>search</mat-icon>
+            <span>検索条件変更</span>
+        </button>
+        <button mat-button (click)="openFieldSettingsDialog()">
+            <mat-icon>settings</mat-icon>
+            <span>表示設定</span>
+        </button>
+    </section>
+    <section class="actions-right">
+        <button mat-raised-button color="primary" (click)="equip()">選択アイテムを装備</button>
+        <button mat-raised-button (click)="dialogRef.close()">閉じる</button>
+    </section>
+</mat-dialog-actions>

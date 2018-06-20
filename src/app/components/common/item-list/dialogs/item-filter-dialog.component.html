@@ -1,0 +1,77 @@
+<header mat-dialog-title>
+    詳細検索
+</header>
+
+<mat-dialog-content>
+    <mat-accordion>
+        <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>{{getPanelCaption('regex')}}</mat-expansion-panel-header>
+            <div class="g2-panel-body regex-pane">
+                <mat-form-field class="item-name-filter">
+                    <input matInput class="item-name-input" type="search" placeholder="アイテム名称検索" [(ngModel)]="_filter.regexItemName" onfocus="this.select(0,this.value.length)"
+                    />
+                </mat-form-field>
+                <mat-form-field class="skill-name-filter">
+                    <input matInput class="skill-name-input" type="search" placeholder="所有スキル検索" [(ngModel)]="_filter.regexSkillName" onfocus="this.select(0,this.value.length)"
+                    />
+                </mat-form-field>
+            </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>{{getPanelCaption('rareTitle')}}</mat-expansion-panel-header>
+            <div class="g2-panel-body">
+                <mat-checkbox [(ngModel)]="_filter.showNormalItem">レア称号なしアイテムを表示する</mat-checkbox>
+                <mat-checkbox class="indent" [(ngModel)]="_filter.possessionOnly" [disabled]="!_filter.showNormalItem">入手済みアイテムのみ表示する</mat-checkbox>
+                <mat-radio-group class="indent" [(ngModel)]="_filter.titleLimit" [disabled]="!_filter.showNormalItem">
+                    <mat-radio-button [value]="1">所持している最高称号のみ</mat-radio-button>
+                    <mat-radio-button [value]="2">所持している最高称号までの称号</mat-radio-button>
+                    <mat-radio-button [value]="3">すべての称号</mat-radio-button>
+                </mat-radio-group>
+                <mat-checkbox [(ngModel)]="_filter.showRareTitledItem">超レア称号付きアイテムを表示する</mat-checkbox>
+                <mat-radio-group class="indent" [(ngModel)]="_filter.acquisition" [disabled]="!_filter.showRareTitledItem">
+                    <mat-radio-button [value]="3">所持品＋掘り出し物</mat-radio-button>
+                    <mat-radio-button [value]="2">所持品のみ</mat-radio-button>
+                    <mat-radio-button [value]="1">掘り出し物のみ</mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>{{getPanelCaption('category')}}</mat-expansion-panel-header>
+            <div class="g2-panel-body multi-column">
+                <mat-checkbox class="all-check" [checked]="getChecked(_categories)" [indeterminate]="getIndeterminate(_categories)" (change)="setChecked(_categories, $event.checked)">全て</mat-checkbox>
+                <ng-template ngFor let-treeItem [ngForOf]="_categories.children">
+                    <mat-checkbox [value]="treeItem.key" [(ngModel)]="treeItem.checked">{{treeItem.key}}</mat-checkbox>
+                </ng-template>
+            </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>{{getPanelCaption('title')}}</mat-expansion-panel-header>
+            <div class="g2-panel-body multi-column">
+                <mat-checkbox class="all-check" [checked]="getChecked(_titles)" [indeterminate]="getIndeterminate(_titles)" (change)="setChecked(_titles, $event.checked)">全て</mat-checkbox>
+                <ng-template ngFor let-treeItem [ngForOf]="_titles.children">
+                    <mat-checkbox [value]="treeItem.key" [(ngModel)]="treeItem.checked">{{treeItem.key}}</mat-checkbox>
+                </ng-template>
+            </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="!hideComposite">
+            <mat-expansion-panel-header>{{getPanelCaption('composite')}}</mat-expansion-panel-header>
+            <div class="g2-panel-body">
+                <mat-checkbox [(ngModel)]="_filter.composite">アイテム合成できるアイテムのみ表示する</mat-checkbox>
+                <mat-checkbox [(ngModel)]="_filter.addTitle">アイテム合成で称号付与できるアイテムのみ表示する</mat-checkbox>
+                <mat-checkbox class="indent" [(ngModel)]="_filter.upgradableOnly" [disabled]="!_filter.addTitle">称号付与で強化可能なアイテムのみ表示する</mat-checkbox>
+                <mat-checkbox [(ngModel)]="_filter.inheritanceOnly">称号継承可能なアイテムのみ表示する</mat-checkbox>
+                <mat-radio-group class="indent" [(ngModel)]="_filter.inheritance" [disabled]="!_filter.inheritanceOnly">
+                    <mat-radio-button [value]="3">継承元＋継承先</mat-radio-button>
+                    <mat-radio-button [value]="1">継承元のみ</mat-radio-button>
+                    <mat-radio-button [value]="2">継承先のみ</mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="comiit()">OK</button>
+    <button mat-raised-button color="primary" (click)="clear()">クリア</button>
+    <button mat-raised-button (click)="dialogRef.close()">キャンセル</button>
+</mat-dialog-actions>

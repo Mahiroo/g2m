@@ -1,0 +1,36 @@
+@g2-primary-color: #673ab7;
+@g2-primary-text-color: white;
+@g2-accent-color: #ffd740;
+@g2-accent-text-color: black;
+@g2-warn-color: #f44336;
+@g2-warn-text-color: white;
+.mat-table {
+    width: 600px;
+}
+
+.selected {
+    background-color: @g2-accent-color;
+    color: @g2-accent-text-color;
+}
+
+.editing {
+    font-weight: bold;
+}
+
+.information {
+    flex: 1 1 auto;
+    &.mat-cell {
+        cursor: pointer;
+    }
+    .caption {
+        font-size: 1.1rem;
+        padding-left: 1em;
+    }
+}
+
+.actions {
+    display: flex;
+    .actions-left {
+        flex: 1 1 auto;
+    }
+}

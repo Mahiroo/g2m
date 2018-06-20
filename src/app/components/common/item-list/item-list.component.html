@@ -1,0 +1,47 @@
+<section class="list-header">
+    <div class="row">
+        <div class="row-header">
+            <div class="selector" *ngIf="selectable">
+                選択
+            </div>
+            <div class="cell displayName">
+                <span [ngClass]="getHeaderCssClass('displayName')" (click)="sort('displayName')">{{'displayName' | paramShortName}}</span>
+            </div>
+        </div>
+        <div class="row-detail">
+            <div class="row-params">
+                <ng-template ngFor let-key [ngForOf]="_columns">
+                    <div class="cell" [ngClass]="[key]">
+                        <span [ngClass]="getHeaderCssClass(key)" (click)="sort(key)">{{key | paramShortName}}</span>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="list-body">
+    <ng-template ngFor let-item [ngForOf]="getDisplayItems()">
+        <div class="row" [ngClass]="getRowCssClass(item)">
+            <div class="row-header">
+                <div class="selector" *ngIf="selectable">
+                    <mat-checkbox [(ngModel)]="item.selected" *ngIf="!item.static"></mat-checkbox>
+                </div>
+                <div class="cell displayName">
+                    <span (click)="openItemInfoDialog(item)">{{item.displayName}}{{item.restricts | restricts}}</span>
+                </div>
+            </div>
+            <div class="row-detail">
+                <div class="row-params" *ngIf="_columns.length">
+                    <ng-template ngFor let-key [ngForOf]="_columns">
+                        <div class="cell" [ngClass]="[key]">{{item[key] | paramValue:key}}</div>
+                    </ng-template>
+                </div>
+                <div class="cell row-skills" *ngIf="_showSkills && item.skills.length">
+                    <ng-template ngFor let-skill [ngForOf]="item.skills">
+                        <div [ngClass]="getSkillCssClass(skill)">{{skill}}</div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</section>

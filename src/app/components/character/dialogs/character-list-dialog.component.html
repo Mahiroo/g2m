@@ -1,0 +1,41 @@
+<header mat-dialog-title>
+    キャラクター一覧
+</header>
+
+<mat-dialog-content>
+    <mat-table [dataSource]="characters">
+
+        <ng-container matColumnDef="information">
+            <mat-header-cell class="information" *matHeaderCellDef>名前</mat-header-cell>
+            <mat-cell class="information" *matCellDef="let character" (click)="select(character)">
+                <div>{{character.name}}</div>
+                <div class="caption">{{getBuildInfo(character)}}</div>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="['information']"></mat-header-row>
+        <mat-row [ngClass]="getRowCssClass(row)" *matRowDef="let row; columns: ['information'];"></mat-row>
+    </mat-table>
+</mat-dialog-content>
+
+<mat-dialog-actions class="actions">
+    <section class="actions-left">
+        <button mat-icon-button color="primary" (click)="orderUp()" [disabled]="!selectedCharacter">
+            <mat-icon>arrow_upward</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" (click)="orderDown()" [disabled]="!selectedCharacter">
+            <mat-icon>arrow_downward</mat-icon>
+        </button>
+    </section>
+    <section class="actions-right">
+        <button mat-raised-button color="primary" (click)="commit()" [disabled]="!selectedCharacter">
+            <mat-icon>edit</mat-icon>
+            <span>選択</span>
+        </button>
+        <button mat-raised-button color="warn" (click)="remove()" [disabled]="!selectedCharacter">
+            <mat-icon>delete</mat-icon>
+            <span>削除</span>
+        </button>
+        <button mat-raised-button (click)="dialogRef.close()">閉じる</button>
+    </section>
+</mat-dialog-actions>

@@ -1,0 +1,28 @@
+<article mat-dialog-title>
+    キャラクタービルド構成
+</article>
+<mat-dialog-content>
+    <section class="parts">
+        <mat-radio-group class="is-npc" [value]="isNpc" (change)="changeIsNpc($event)">
+            <mat-radio-button [value]="false">ビルドキャラ</mat-radio-button>
+            <mat-radio-button [value]="true">NPC</mat-radio-button>
+        </mat-radio-group>
+        <ng-template ngFor let-field [ngForOf]="fields">
+            <mat-form-field *ngIf="!field.hidden()">
+                <mat-select placeholder="{{field.placeholder}}" [value]="edit[field.key]" [disabled]="field.readonly()" (selectionChange)="selectionChange(field.key, $event)">
+                    <ng-template ngFor let-item [ngForOf]="getOptions(field.key)">
+                        <mat-option [value]="item">{{ item }}</mat-option>
+                    </ng-template>
+                </mat-select>
+            </mat-form-field>
+        </ng-template>
+        <mat-form-field class="level">
+            <input matInput type="number" placeholder="レベル" [(ngModel)]="edit.level" min="0" [max]="maxLevel" />
+        </mat-form-field>
+    </section>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="commit()">決定</button>
+    <button mat-raised-button (click)="dialogRef.close()">閉じる</button>
+</mat-dialog-actions>

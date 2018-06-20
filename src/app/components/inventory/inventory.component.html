@@ -1,0 +1,22 @@
+<section class="g2-inventory">
+    <section class="operation">
+        <section class="search-items">
+            <mat-form-field class="item-name-filter">
+                <input matInput class="item-name-input" type="search" placeholder="アイテム名称検索" [(ngModel)]="settings.filter.regexItemName"
+                    (keyup)="onKeyupItemName($event)" onfocus="this.select(0,this.value.length)" (input)="onInputSearchRegex($event)"
+                />
+            </mat-form-field>
+            <mat-form-field class="skill-name-filter">
+                <input matInput class="skill-name-input" type="search" placeholder="所有スキル検索" [(ngModel)]="settings.filter.regexSkillName"
+                    (keyup)="onKeyupItemName($event)" onfocus="this.select(0,this.value.length)" (input)="onInputSearchRegex($event)"
+                />
+            </mat-form-field>
+        </section>
+
+        <mat-paginator [pageSize]="settings.pageSize" [pageSizeOptions]="[5, 10, 15, 20, 40]" [length]="items.length" [showFirstLastButtons]="true"
+            (page)="changePage($event)"></mat-paginator>
+    </section>
+
+    <g2-item-list class="inventory-list" [columns]="settings.columns" [items]="items" [pageSize]="settings.pageSize" [pageIndex]="pageIndex"
+        [highlightSkillRegex]="settings.filter.regexSkillName" (change)="refresh()"></g2-item-list>
+</section>

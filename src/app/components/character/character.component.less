@@ -1,0 +1,185 @@
+@g2-primary-color: #673ab7;
+@g2-primary-text-color: white;
+@g2-accent-color: #ffd740;
+@g2-accent-text-color: black;
+@g2-warn-color: #f44336;
+@g2-warn-text-color: white;
+.g2-character {
+    // コンポーネントコンテンツ
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow: auto;
+    padding: 5px 10px 0 10px;
+    .items-pane {
+        // アイテムリストエリア
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+    }
+}
+
+.base-info-pane {
+    // 基本情報エリア
+    flex: 0 0 auto;
+}
+
+.parameters-pane {
+    // パラメータ情報エリア
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.operations-pane {
+    display: flex;
+}
+
+.details-pane {
+    // 詳細情報エリア
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    .item-list-pane {
+        // アイテム一覧エリア
+        display: flex;
+        flex: 0 0 400px;
+        flex-direction: column;
+        overflow-x: hidden;
+        padding-bottom: 20px;
+        padding-right: 5px;
+        .equipment-list {
+            flex: 1 1 auto;
+            padding-top: 10px;
+            overflow: auto;
+        }
+    }
+    .skill-list-pane {
+        // スキル一覧エリア
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        overflow-x: hidden;
+        padding-bottom: 20px;
+        padding-left: 5px;
+        .skill-list {
+            flex: 1 1 auto;
+            column-gap: 10px;
+            column-width: 150px;
+            padding-top: 10px;
+            overflow: auto;
+        }
+    }
+}
+
+.equipment-item {
+    // 装備アイテム
+    border: 2px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+    margin-right: 3px;
+    overflow: hidden;
+    padding: 1px 3px;
+    text-overflow: ellipsis;
+    &.jeweled {
+        background-color: lightblue;
+    }
+    &.static {
+        background-color: @g2-accent-color;
+        color: @g2-accent-text-color;
+    }
+    &.highlight {
+        background-color: @g2-primary-color;
+        color: @g2-primary-text-color;
+    }
+    &.selected {
+        background-color: @g2-primary-color;
+        border-color: @g2-warn-color;
+        color: @g2-primary-text-color;
+    }
+    &.used {
+        color: @g2-warn-color;
+    }
+    .item-name {
+        flex: 1 1 auto;
+    }
+    .ratio {
+        flex: 0 0 auto;
+    }
+}
+
+.skill-item {
+    // スキルアイテム
+    break-inside: avoid-column;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+    margin-right: 3px;
+    overflow: hidden;
+    padding: 1px 3px;
+    text-overflow: ellipsis;
+    width: 140px;
+    white-space: nowrap;
+    &.static {
+        background-color: @g2-accent-color;
+        color: @g2-accent-text-color;
+    }
+    &.highlight {
+        background-color: @g2-primary-color;
+        color: @g2-primary-text-color;
+    }
+    &.selected {
+        background-color: @g2-primary-color;
+        border-color: @g2-warn-color;
+        color: @g2-primary-text-color;
+    }
+    &.duplicate {
+        color: @g2-warn-color;
+    }
+    &.example {
+        cursor: default;
+        display: inline-flex;
+    }
+}
+
+.character-name {
+    width: 20.0em;
+    .mat-input-element {
+        ime-mode: active;
+    }
+}
+
+.params-table {
+    border-collapse: collapse;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    caption {
+        text-align: left;
+    }
+    th,
+    td {
+        text-align: center;
+        border: 1px solid gray;
+        padding: 2px 5px;
+    }
+    .caption {
+        width: auto;
+    }
+    .param-name {
+        width: 3.0em;
+    }
+    .param-value {
+        width: 5.0em;
+        .limit-over {
+            color: red;
+        }
+    }
+}

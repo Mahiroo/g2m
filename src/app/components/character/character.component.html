@@ -1,0 +1,106 @@
+<section class="g2-character">
+    <section class="base-info-pane">
+        <section>
+            <mat-form-field class="character-name">
+                <input matInput type="text" class="g2-ime" placeholder="キャラクター保存名" [(ngModel)]="editCharacter.name" (change)="updated=true"
+                />
+            </mat-form-field>
+            <button mat-button (click)="openEditPartsDialog()">
+                <mat-icon>edit</mat-icon>
+                <span>【ビルド構成】{{getBuildInfo()}}</span>
+            </button>
+        </section>
+
+        <section class="parameters-pane">
+            <table class="params-table">
+                <caption>基本能力値</caption>
+                <tbody>
+                    <tr>
+                        <th>レベル</th>
+                        <ng-template ngFor let-key [ngForOf]="BASE_PARAMS">
+                            <th class="param-name">{{key | paramName }}</th>
+                        </ng-template>
+                        <th>成長倍率</th>
+                    </tr>
+                    <tr>
+                        <td>{{editCharacter.level}}</td>
+                        <ng-template ngFor let-key [ngForOf]="BASE_PARAMS">
+                            <td class="param-value">
+                                <span>{{editCharacter[key]}}</span>
+                                <span [ngClass]="{'limit-over': (editCharacter.additionalParams[key] > 10)}">({{editCharacter.additionalParams[key] | paramValue:key }})</span>
+                            </td>
+                        </ng-template>
+                        <td>{{editCharacter.growthRatio | number:'1.2-2'}}倍</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="params-table" *ngIf="!!this.equipmentRatios.length">
+                <caption>装備倍率</caption>
+                <tr>
+                    <ng-template ngFor let-item [ngForOf]="this.equipmentRatios">
+                        <th>{{item.key}}</th>
+                    </ng-template>
+                </tr>
+                <tr>
+                    <ng-template ngFor let-item [ngForOf]="this.equipmentRatios">
+                        <td>{{item.value | number:'1.1-2'}}倍</td>
+                    </ng-template>
+                </tr>
+            </table>
+        </section>
+    </section>
+
+    <section class="details-pane">
+        <section class="item-list-pane">
+            <header>
+                <div>アイテム（{{editCharacter.equipmentCount}}個装備可能／{{editCharacter.equipments.length}}個装備中）</div>
+                <div class="operations-pane">
+                    <div style="flex: 1 1 auto;">
+                        <button mat-button (click)="openItemListDialog()">
+                            <mat-icon>list</mat-icon>
+                            <span>一覧</span>
+                        </button>
+                    </div>
+                    <div>
+                        <button mat-icon-button color="primary" (click)="openAddItemDialog()" matTooltip="追加">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                        <button mat-icon-button color="primary" (click)="openSearchItemDialog()" matTooltip="検索">
+                            <mat-icon>search</mat-icon>
+                        </button>
+                        <button mat-icon-button color="primary" (click)="openEditItemDialog()" matTooltip="編集" [disabled]="(!selectedItem || selectedItem.static)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" (click)="removeSelectedItem()" matTooltip="外す" [disabled]="(!selectedItem || selectedItem.static)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <section class="equipment-list">
+                <ng-template ngFor let-item [ngForOf]="attachedItems">
+                    <div [ngClass]="getEquipmentItemCssClass(item)" (click)="selectEquipmentItem(item, $event)" (dblclick)="openEditItemDialog(item, $event)"
+                        [matTooltip]="getBeingUsedCharacters(item)">
+                        <span class="item-name">{{item.displayName}}</span>
+                        <span class="ratio" *ngIf="!item.static">{{getItemRatio(item) | number:'1.2-2'}}倍</span>
+                    </div>
+                </ng-template>
+            </section>
+        </section>
+        <section class="skill-list-pane">
+            <header style="display:flex;width:100%;">
+                <div style="flex: 1 1 auto">スキル({{attachedSkills.length}}個所持)</div>
+                <div>
+                    凡例：
+                    <span class="skill-item static example">固定スキル</span>
+                    <span class="skill-item duplicate example">重複スキル</span>
+                </div>
+            </header>
+            <section class="skill-list">
+                <ng-template ngFor let-skill [ngForOf]="attachedSkills">
+                    <span [ngClass]="getSkillItemCssClass(skill)" (click)="selectSkill(skill)">{{skill.name}}</span>
+                </ng-template>
+            </section>
+        </section>
+    </section>
+</section>

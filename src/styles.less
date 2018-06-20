@@ -1,0 +1,42 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+html,
+body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+}
+
+.mat-dialog-actions {
+    justify-content: flex-end;
+}
+
+// mat-option の拡張
+.mat-autocomplete-panel {
+    .mat-option {
+        &.mat-active {
+            color: white;
+            background-color: rgb(255, 64, 129);
+        }
+        &:not(.mat-option-multiple):not(.mat-option-disabled) {
+            &.mat-selected {
+                color: rgb(255, 64, 129);
+                background-color: white;
+                &.mat-active {
+                    color: white;
+                    background-color: rgb(255, 64, 129);
+                }
+            }
+        }
+    }
+}

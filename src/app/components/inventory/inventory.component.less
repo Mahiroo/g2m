@@ -1,0 +1,41 @@
+.g2-inventory {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow: hidden;
+    padding: 5px 10px 0 10px;
+}
+
+.operation {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    .search-items {
+        align-items: baseline;
+        display: flex;
+        flex-wrap: nowrap;
+        .item-name-filter {
+            flex: 0 0 20.0em;
+            margin-right: 10px;
+        }
+        .item-name-input {
+            ime-mode: active;
+        }
+        .skill-name-filter {
+            flex: 0 0 15.0em;
+        }
+        .skill-name-input {
+            ime-mode: active;
+        }
+    }
+    .mat-paginator {
+        background-color: transparent;
+        flex: 1 0 auto;
+    }
+}
+
+.inventory-list {
+    flex: 1 1 auto;
+    overflow: hidden;
+}

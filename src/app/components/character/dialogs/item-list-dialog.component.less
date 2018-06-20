@@ -1,0 +1,40 @@
+.mat-dialog-title {
+    align-items: center;
+    display: flex;
+    .mat-paginator {
+        background-color: transparent;
+        flex: 1 0 auto;
+    }
+}
+
+.mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .operation-pane {
+        flex: 0 0 auto;
+    }
+    .item-list-pane {
+        flex: 1 1 auto;
+    }
+}
+
+.inventory-list {
+    flex: 1 1 500px;
+    overflow: hidden;
+    height: 500px;
+    max-height: 75vh;
+}
+
+.mat-dialog-actions {
+    justify-content: flex-start;
+}
+
+.actions-left {
+    flex: 0 0 auto;
+}
+
+.actions-right {
+    flex: 1 1 auto;
+    text-align: right;
+}

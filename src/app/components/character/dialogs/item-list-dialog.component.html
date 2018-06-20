@@ -1,0 +1,23 @@
+<header mat-dialog-title>
+    <span>装備アイテム一覧</span>
+</header>
+
+<mat-dialog-content>
+    <section class="item-list-pane">
+        <g2-item-list class="inventory-list" [columns]="columns" [items]="(isRatio) ? _ratioItems : _baseItems" [pageSize]="99" [pageIndex]="0"
+            [readonly]="true"></g2-item-list>
+    </section>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <section class="actions-left">
+        <mat-slide-toggle [(ngModel)]="isRatio">装備倍率を反映する</mat-slide-toggle>
+        <button mat-button (click)="openFieldSettingsDialog()">
+            <mat-icon>settings</mat-icon>
+            <span>表示項目設定</span>
+        </button>
+    </section>
+    <section class="actions-right">
+        <button mat-raised-button (click)="dialogRef.close()">閉じる</button>
+    </section>
+</mat-dialog-actions>

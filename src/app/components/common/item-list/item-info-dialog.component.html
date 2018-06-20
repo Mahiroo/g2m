@@ -1,0 +1,87 @@
+<article mat-dialog-title>
+    <section class="item-names">
+        <div class="item-name" *ngIf="originalItem">{{originalItem.displayName}}</div>
+        <div class="item-name">{{item.displayName}}</div>
+    </section>
+    <section class="history" *ngIf="!!(upgradeHistory.length) && false">
+        <button mat-button>
+            <mat-icon>history</mat-icon>
+            継承・合成履歴
+        </button>
+    </section>
+</article>
+
+<mat-dialog-content>
+    <g2-item-info [item]="item"></g2-item-info>
+    <section class="composite" *ngIf="!readonly">
+
+        <section class="composite-sub" *ngIf="composites.length">
+            <header>＜変化合成＞</header>
+            <ng-template ngFor let-child [ngForOf]="composites">
+                <button mat-button class="composite-button" [disabled]="!child.isUpgrade" (click)="setUpgrade(child.to)">
+                    <span class="from">{{child.from.displayName}}</span>
+                    <span class="other">{{child.other.displayName}}</span>
+                    <span class="to">{{child.to.displayName}}</span>
+                </button>
+            </ng-template>
+        </section>
+
+        <section class="composite-sub" *ngIf="addTitles.length">
+            <header>＜称号付与＞</header>
+            <ng-template ngFor let-child [ngForOf]="addTitles">
+                <button mat-button class="composite-button" [disabled]="!child.isUpgrade" (click)="setUpgrade(child.to)">
+                    <span class="from">{{child.from.displayName}}</span>
+                    <span class="to">{{child.to.displayName}}</span>
+                </button>
+            </ng-template>
+        </section>
+
+        <section class="composite-sub" *ngIf="inheritances.length">
+            <header>＜称号継承＞</header>
+            <ng-template ngFor let-child [ngForOf]="inheritances">
+                <button mat-button class="composite-button" [disabled]="!child.isUpgrade" *ngIf="!!(child.from)" (click)="setUpgrade(child.to, true)">
+                    <span class="from">{{child.from.displayName}}</span>
+                    <span class="to">{{child.to.displayName}}</span>
+                </button>
+                <button mat-button class="composite-button" [disabled]="!child.isUpgrade" *ngIf="!(child.from)" (click)="setUpgrade(child.to, true)">
+                    <span class="from">(称号継承)</span>
+                    <span class="to">{{child.to.displayName}}</span>
+                </button>
+            </ng-template>
+        </section>
+
+        <section class="upgrade-costs" *ngIf="upgradeCosts.length">
+            <header>＜合成代価＞</header>
+            <ol class="detail">
+                <li *ngFor="let upgradeCost of upgradeCosts">
+                    <div>{{upgradeCost.from}} → {{upgradeCost.to}}</div>
+                    <div>{{upgradeCost.cost}}</div>
+                </li>
+            </ol>
+        </section>
+    </section>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <section class="title-setting" *ngIf="item.havableTitle && !item.rareTitle && !item.dummy && !originalItem && !readonly">
+        <div class="rating">
+            <div [ngClass]="getTitleCssClass()" (click)="setPossession()">入手済</div>
+            <ng-template ngFor let-title [ngForOf]="titles">
+                <div [ngClass]="getTitleCssClass(title)" (mouseover)="overTitle(title)" (mouseout)="outTitle()" (click)="setTitle(title)">{{title.symbol}}</div>
+            </ng-template>
+        </div>
+    </section>
+    <button mat-raised-button color="primary" *ngIf="!readonly && originalItem && item.rareTitle" (click)="update()">
+        <mat-icon>trending_up</mat-icon>
+        このアイテムに更新する
+    </button>
+    <button mat-raised-button color="primary" *ngIf="!readonly && item.isAcquisition && !originalItem" (click)="acquire()">
+        <mat-icon>redo</mat-icon>
+        掘り出し物から取り出す
+    </button>
+    <button mat-raised-button color="warn" *ngIf="!readonly && !!(item.rareTitle) && !!(item.updateDate)" (click)="remove()">
+        <mat-icon>delete</mat-icon>
+        削除</button>
+    <button mat-raised-button (click)="dialogRef.close(updated)">閉じる</button>
+</mat-dialog-actions>

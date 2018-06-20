@@ -1,0 +1,49 @@
+<header mat-dialog-title>
+    超レア称号付きアイテム登録
+</header>
+
+<mat-dialog-content>
+    <ul>
+        <li *ngFor="let message of messages">{{message}}</li>
+    </ul>
+
+    <section>
+        <mat-form-field class="rare-title">
+            <input #rareTitleInput type="text" class="input-rare-title" placeholder="超レア称号" matInput [(ngModel)]="selectedRareTitle" [formControl]="rareTitleControl"
+                [matAutocomplete]="rareTitleAuto" onfocus="this.select(0,this.value.length)" (change)="inputValueChanged()" />
+            <mat-error>{{getErrorMessage(rareTitleControl)}}</mat-error>
+            <mat-autocomplete #rareTitleAuto="matAutocomplete" (optionSelected)="titleInput.focus()">
+                <ng-template ngFor let-name [ngForOf]="filteredRareTitleNames | async">
+                    <mat-option [value]="name">{{name}}</mat-option>
+                </ng-template>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="title">
+            <input #titleInput type="text" class="input-title" placeholder="称号" matInput [(ngModel)]="selectedTitle" [formControl]="titleControl"
+                [matAutocomplete]="titleAuto" onfocus="this.select(0,this.value.length)" (change)="inputValueChanged()" />
+            <mat-error>{{getErrorMessage(titleControl)}}</mat-error>
+            <mat-autocomplete #titleAuto="matAutocomplete" (optionSelected)="rareTitleInput.focus()">
+                <ng-template ngFor let-name [ngForOf]="filteredTitleNames | async">
+                    <mat-option [value]="name">{{name}}</mat-option>
+                </ng-template>
+            </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field class="item">
+            <input #rareTitleInput type="text" class="input-item" placeholder="アイテム" matInput [(ngModel)]="selectedItem" [formControl]="itemControl"
+                [matAutocomplete]="itemAuto" onfocus="this.select(0,this.value.length)" (change)="inputValueChanged()" />
+            <mat-error>{{getErrorMessage(itemControl)}}</mat-error>
+            <mat-autocomplete #itemAuto="matAutocomplete" (optionSelected)="registButton.focus()">
+                <ng-template ngFor let-name [ngForOf]="filteredItemNames | async">
+                    <mat-option [value]="name">{{name}}</mat-option>
+                </ng-template>
+            </mat-autocomplete>
+        </mat-form-field>
+    </section>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button #registButton mat-raised-button color="primary" (click)="regist()">登録</button>
+    <button mat-raised-button (click)="dialogRef.close()">閉じる</button>
+</mat-dialog-actions>

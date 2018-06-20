@@ -1,0 +1,34 @@
+<header mat-dialog-title>
+    表示設定
+</header>
+
+<mat-dialog-content>
+    <section class="row">
+        <mat-checkbox class="all-check" [checked]="getChecked(_columns)" [indeterminate]="getIndeterminate(_columns)" (change)="setChecked(_columns, $event.checked)">全て</mat-checkbox>
+    </section>
+    <ng-template ngFor let-treeItem [ngForOf]="_columns.children">
+        <section class="row" *ngIf="!!(treeItem.children)">
+            <section class="caption">
+                <mat-checkbox [checked]="getChecked(treeItem)" [indeterminate]="getIndeterminate(treeItem)" (change)="setChecked(treeItem, $event.checked)">{{treeItem.key}}</mat-checkbox>
+            </section>
+            <section class="children">
+                <ng-template ngFor let-childItem [ngForOf]="treeItem.children">
+                    <div class="child">
+                        <mat-checkbox [(ngModel)]="childItem.checked">{{childItem.key | paramName}}</mat-checkbox>
+                    </div>
+                </ng-template>
+            </section>
+        </section>
+        <section class="row" *ngIf="!(treeItem.children)">
+            <section class="caption">
+                <mat-checkbox [(ngModel)]="treeItem.checked">{{treeItem.key | paramName}}</mat-checkbox>
+            </section>
+        </section>
+    </ng-template>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="comiit()">OK</button>
+    <button mat-raised-button (click)="dialogRef.close()">キャンセル</button>
+</mat-dialog-actions>

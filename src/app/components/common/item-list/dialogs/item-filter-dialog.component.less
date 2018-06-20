@@ -1,0 +1,56 @@
+.g2-panel-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.indent {
+    margin-left: 36px;
+}
+
+.mat-radio-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.mat-checkbox,
+.mat-radio-button {
+    margin-bottom: 10px;
+}
+
+.multi-column {
+    align-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    .mat-checkbox {
+        flex: 0 0 33.3%;
+        &.all-check {
+            flex: 0 0 100%;
+        }
+    }
+}
+
+.regex-pane {
+    display: flex;
+    flex-direction: row;
+    .mat-form-field {
+        flex: 1 1 50%;
+    }
+}
+
+.item-name-filter {
+    flex: 0 0 10.0em;
+    margin-right: 10px;
+}
+
+.item-name-input {
+    ime-mode: active;
+}
+
+.skill-name-filter {
+    flex: 0 0 10.0em;
+}
+
+.skill-name-input {
+    ime-mode: active;
+}

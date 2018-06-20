@@ -1,0 +1,162 @@
+@g2-primary-color: #673ab7;
+@g2-primary-text-color: white;
+@g2-accent-color: #ffd740;
+@g2-accent-text-color: black;
+@g2-warn-color: #f44336;
+@g2-warn-text-color: white;
+:host {
+    display: flex;
+    flex-direction: column;
+    font-family: MeiryoKe_Gothic, "Ricty Diminished", "Osaka－等幅", "Osaka-等幅", Osaka-mono, "ＭＳ ゴシック", "MS Gothic", "Courier New", Courier, Monaco, Menlo, Consolas, "Lucida Console", monospace;
+    font-size: 1.4rem;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+.list-header {
+    flex: 0 0 auto;
+    .header-caption {
+        cursor: pointer;
+        &.sort-key {
+            font-weight: bold;
+            &:after {
+                content: '↑';
+            }
+            &.desc:after {
+                content: '↓';
+            }
+        }
+    }
+}
+
+.list-body {
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+.row {
+    border-bottom: 1px solid grey;
+    display: flex;
+    padding: 6px 0;
+    width: 100%;
+    &.rare-titled {
+        color: #673ab7;
+    }
+    &.acquisition {
+        background-color: lightgrey;
+    }
+    &.highlight-skill {
+        background-color: @g2-accent-color;
+        color: @g2-accent-text-color;
+    }
+    .row-header {
+        align-items: center;
+        display: flex;
+        flex: 0 0 auto;
+    }
+    .row-detail {
+        align-items: flex-start;
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        justify-content: center;
+        overflow-x: hidden;
+        overflow-y: visible;
+        .row-params {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: hidden;
+            width: 100%;
+            &:not(:last-child) {
+                padding-bottom: 6px;
+            }
+        }
+        .row-skills {
+            align-content: stretch;
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            &:not(:first-child) {
+                border-top: 1px dashed grey;
+                padding-top: 6px;
+            }
+            .skill {
+                margin-right: 1.0em;
+                &.highlight {
+                    background-color: @g2-accent-color;
+                    color: @g2-accent-text-color;
+                }
+            }
+        }
+    }
+}
+
+.cell {
+    padding: 0 6px;
+}
+
+.displayName,
+.category {
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.selector {
+    text-align: center;
+    width: 2.5em;
+}
+
+.displayName {
+    width: 25.0em;
+    span {
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.category {
+    flex: 0 0 12.0em;
+}
+
+.price {
+    flex: 0 0 10.0em;
+    text-align: right;
+}
+
+.atk,
+.hit,
+.crt,
+.cnt,
+.def,
+.eva,
+.mat,
+.rcv,
+.mdf,
+.trp,
+.mhp,
+.equ {
+    flex: 0 0 3.5em;
+    text-align: right;
+}
+
+.str,
+.int,
+.men,
+.vit,
+.agi,
+.luc {
+    flex: 0 0 3.5em;
+    text-align: center;
+}
+
+.updateDate {
+    flex: 0 0 11.0em;
+    text-align: left;
+}

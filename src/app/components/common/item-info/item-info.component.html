@@ -1,0 +1,33 @@
+<section class="item-info">
+    <div>【{{item.category}}】</div>
+    <ng-template [ngIf]="item.restricts">
+        <ng-template [ngIf]="item.restricts.forbid">
+            <div *ngFor="let restrict of item.restricts.forbid">
+                【{{restrict}}不可】
+            </div>
+        </ng-template>
+        <ng-template [ngIf]="item.restricts.genders">
+            <div *ngFor="let restrict of item.restricts.genders">
+                【{{restrict|gender}}専用】
+            </div>
+        </ng-template>
+        <ng-template [ngIf]="item.restricts.jobs">
+            <div *ngFor="let restrict of item.restricts.jobs">
+                【{{restrict}}専用】
+            </div>
+        </ng-template>
+    </ng-template>
+    <div *ngIf="item.isRare">【レアアイテム】</div>
+    <div *ngIf="item.price">価格 : {{item.price | paramValue:'price'}}</div>
+    <ng-template ngFor let-key [ngForOf]="params">
+        <div *ngIf="item[key]">
+            {{key | paramName }} {{item[key] | paramValue:key}}
+            <span *ngIf="(item.baseParams && item.baseParams[key] && item[key]!==item.baseParams[key])">({{item.baseParams[key] | paramValue:key}})</span>
+        </div>
+    </ng-template>
+</section>
+<section class="skills">
+    <ng-template ngFor let-skill [ngForOf]="item.skills">
+        <div>{{skill}}</div>
+    </ng-template>
+</section>

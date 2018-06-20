@@ -1,0 +1,39 @@
+<header mat-dialog-title>
+    データ管理
+</header>
+
+<mat-dialog-content>
+    <mat-tab-group (selectedTabChange)="tabChanged($event)">
+        <mat-tab label="エクスポート">
+            <article class="tab-content">
+                <div class="description">キャラクター情報を外部ファイルに保存します。</div>
+            </article>
+        </mat-tab>
+        <mat-tab label="インポート">
+            <article class="tab-content">
+                <div class="description">
+                    エクスポートデータを取り込み、キャラクター情報を復元します。
+                    <br/>
+                    <span color="warn">※現在保存されている情報は上書きされますので、ご注意ください。</span>
+                </div>
+                <mat-form-field class="file-input">
+                    <input type="text" readonly matInput [(ngModel)]="fileName" (click)="fileInput.click()" placeholder="インポートファイル指定" />
+                    <span matSuffix>
+                        <button mat-icon-button (click)="fileInput.click()">
+                            <mat-icon>attach_file</mat-icon>
+                        </button>
+                        <input name="fileInput" #fileInput type="file" style="display:none;" (change)="onFileInput($event)" />
+                    </span>
+                </mat-form-field>
+            </article>
+        </mat-tab>
+    </mat-tab-group>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="execute()">
+        <mat-icon>undo</mat-icon>
+        <span>実行</span>
+    </button>
+    <button mat-raised-button (click)="dialogRef.close()">閉じる</button>
+</mat-dialog-actions>

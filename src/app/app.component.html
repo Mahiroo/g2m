@@ -1,0 +1,24 @@
+<article class="g2-root">
+    <mat-toolbar class="g2-toolbar mat-elevation-z6" color="primary">
+        <button mat-icon-button [matMenuTriggerFor]="mainMenu">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #mainMenu="matMenu" class="mat-elevation-z10">
+            <ng-template ngFor let-setting [ngForOf]="modeSettings">
+                <button mat-menu-item (click)="changeMode(setting)">
+                    <mat-icon>{{setting.icon}}</mat-icon>
+                    <span>{{setting.title}}</span>
+                </button>
+            </ng-template>
+        </mat-menu>
+        <section class="operation-area" [ngSwitch]="mode.name">
+            <g2-inventory-menu *ngSwitchCase="'inventory'"></g2-inventory-menu>
+            <g2-character-menu *ngSwitchCase="'character'"></g2-character-menu>
+        </section>
+        <section>{{mode.title}}</section>
+    </mat-toolbar>
+    <section class="g2-contents" [ngSwitch]="mode.name">
+        <g2-inventory *ngSwitchCase="'inventory'"></g2-inventory>
+        <g2-character *ngSwitchCase="'character'"></g2-character>
+    </section>
+</article>
