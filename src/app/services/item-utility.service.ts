@@ -262,10 +262,17 @@ export class ItemUtilityService {
                 if (item.havableTitle && filter.titles && !_.contains(filter.titles, item.title)) { return false; }
 
                 // アイテム名称フィルタ
-                if (regexItemName && !regexItemName.test(item.displayName)) { return false; }
+                if (regexItemName) {
+                    regexItemName.lastIndex = 0;
+                    if (!regexItemName.exec(item.displayName)) { return false; }
+                }
                 // スキル名称フィルタ
                 if (regexSkillName) {
-                    if (!_.find(item.skills, skill => regexSkillName.test(skill))) { return false; }
+                    const foundSkill: string = _.find(item.skills, skill => {
+                        regexSkillName.lastIndex = 0;
+                        return regexSkillName.exec(skill);
+                    });
+                    if (!foundSkill) { return false; }
                 }
 
                 // アイテム合成フィルタ
