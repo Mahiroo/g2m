@@ -26,7 +26,7 @@
                 <div class="selector" *ngIf="selectable">
                     <mat-checkbox [(ngModel)]="item.selected" *ngIf="!item.static"></mat-checkbox>
                 </div>
-                <div class="cell displayName">
+                <div class="cell displayName" [ngClass]="{'rare-titled': !!(item.rareTitle)}">
                     <span (click)="openItemInfoDialog(item)">{{item.displayName}}{{item.restricts | restricts}}</span>
                 </div>
             </div>

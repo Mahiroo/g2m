@@ -125,6 +125,7 @@ export class CharacterComponent implements OnInit {
      */
     getEquipmentItemCssClass(item: g2.IInventory): string[] {
         const result: string[] = ['equipment-item'];
+        if (item.rareTitle) { result.push('rare-titled'); }
         if (item.jewel) { result.push('jeweled'); }
         if (item.static) { result.push('static'); }
         if (this.selectedItem && this.selectedItem === item) { result.push('selected'); }
