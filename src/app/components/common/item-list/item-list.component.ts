@@ -136,7 +136,10 @@ export class ItemListComponent implements OnInit {
      */
     getSkillCssClass(skill: string): string[] {
         const result: string[] = ['skill'];
-        if (this._skillRegex && this._skillRegex.test(skill)) { result.push('highlight'); }
+        if (this._skillRegex) {
+            this._skillRegex.lastIndex = 0;
+            if (this._skillRegex.exec(skill)) { result.push('highlight'); }
+        }
         return result;
     }
 
