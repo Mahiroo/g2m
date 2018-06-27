@@ -130,7 +130,7 @@ export class CharacterComponent implements OnInit {
         if (item.static) { result.push('static'); }
         if (this.selectedItem && this.selectedItem === item) { result.push('selected'); }
         if (this.selectedSkill && _.contains(item.skills, this.selectedSkill.name)) { result.push('highlight'); }
-        if (this.beingUsedItems[item.displayName]) { result.push('used'); }
+        if (this.beingUsedItems[item.displayName.replace(/\[.+\]]/, '')]) { result.push('used'); }
         return result;
     }
 
@@ -300,9 +300,10 @@ export class CharacterComponent implements OnInit {
         this.attachedItems = this.charUtil.getAllItems(this.editCharacter);
         this.beingUsedItems = {};
         _.forEach(this.attachedItems, item => {
+            const itemName: string = item.displayName.replace(/\[.+\]]/, '');
             const attachedCharacters: string[] = this.charUtil.getItemAttachedCharacters(item, this.editCharacter.id);
             if (attachedCharacters.length) {
-                this.beingUsedItems[item.displayName] = attachedCharacters;
+                this.beingUsedItems[itemName] = attachedCharacters;
             }
         });
 
