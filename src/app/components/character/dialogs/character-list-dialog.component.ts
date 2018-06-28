@@ -103,7 +103,7 @@ export class CharacterListDialogComponent implements OnInit {
         const isEdit: boolean = (this.editCharacter && this.selectedCharacter.id === this.editCharacter.id);
         const msg: string = ((isEdit) ? "現在編集中の" : "") + `キャラクター[ ${this.selectedCharacter.name} ]を削除してよろしいですか？`;
         if (!confirm(msg)) { return; }
-        this.charUtil.remove(this.editCharacter, true);
+        this.charUtil.remove(this.selectedCharacter, true);
         if (isEdit) {
             this.dialogRef.close(this.charUtil.create());
         } else {
