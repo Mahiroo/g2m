@@ -13,6 +13,13 @@ import { ItemFieldKeys } from '../../../common/const';
 })
 export class ItemInfoComponent {
 
+    /**
+     * 基本値表示フラグ.
+     */
+    @Input() showBase: boolean;
+    /**
+     * アイテム情報.
+     */
     @Input() item: g2.IInventory;
 
     /**
@@ -20,4 +27,14 @@ export class ItemInfoComponent {
      */
     params: string[] = _.reject(ItemFieldKeys.All, key => _.contains(['displayName', 'category', 'price', 'skills', 'updateDate'], key));
 
+    /**
+     * アイテム設定値取得.
+     * @param key キー値
+     */
+    getValue(key: string): any {
+        if (this.item.baseParams && this.showBase) {
+            if (this.item.baseParams[key]) { return this.item.baseParams[key]; }
+        }
+        return this.item[key];
+    }
 }

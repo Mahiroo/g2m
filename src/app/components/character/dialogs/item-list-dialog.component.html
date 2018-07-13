@@ -5,7 +5,7 @@
 <mat-dialog-content>
     <section class="item-list-pane">
         <g2-item-list class="inventory-list" [columns]="columns" [items]="(isRatio) ? _ratioItems : _baseItems" [pageSize]="99" [pageIndex]="0"
-            [readonly]="true"></g2-item-list>
+            [readonly]="true" [showBase]="!isRatio"></g2-item-list>
     </section>
 </mat-dialog-content>
 

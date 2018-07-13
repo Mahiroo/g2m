@@ -33,7 +33,7 @@
             <div class="row-detail">
                 <div class="row-params" *ngIf="_columns.length">
                     <ng-template ngFor let-key [ngForOf]="_columns">
-                        <div class="cell" [ngClass]="[key]">{{item[key] | paramValue:key}}</div>
+                        <div class="cell" [ngClass]="[key]">{{ getValue(item, key) | paramValue:key}}</div>
                     </ng-template>
                 </div>
                 <div class="cell row-skills" *ngIf="_showSkills && item.skills.length">

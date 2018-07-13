@@ -35,8 +35,7 @@ export class ItemListDialogComponent implements OnInit {
     set itemRatios(value: g2.IItemRatio) {
         this._itemRatios = value;
         if (this._baseItems) {
-            this._ratioItems = _.map(this._baseItems, item => this.itemUtil.applyRatio(item, this._itemRatios));
-            console.log(this._ratioItems);
+            this._ratioItems = _.map(this._baseItems, item => item);
         }
     }
     _itemRatios: g2.IItemRatio;
@@ -46,7 +45,7 @@ export class ItemListDialogComponent implements OnInit {
     set items(value: g2.IInventory[]) {
         this._baseItems = _.map(value, item => this.itemUtil.getClone(item));
         if (this._itemRatios) {
-            this._ratioItems = _.map(value, item => this.itemUtil.applyRatio(item, this._itemRatios));
+            this._ratioItems = _.map(value, item => item);
         }
     }
     _baseItems: g2.IInventory[];

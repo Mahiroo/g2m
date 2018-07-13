@@ -20,8 +20,8 @@
     <div *ngIf="item.isRare">【レアアイテム】</div>
     <div *ngIf="item.price">価格 : {{item.price | paramValue:'price'}}</div>
     <ng-template ngFor let-key [ngForOf]="params">
-        <div *ngIf="item[key]">
-            {{key | paramName }} {{item[key] | paramValue:key}}
+        <div *ngIf="item[key] || (item.baseParams && item.baseParams[key])">
+            {{key | paramName }} {{getValue(key) | paramValue:key}}
             <span *ngIf="(item.baseParams && item.baseParams[key] && item[key]!==item.baseParams[key])">({{item.baseParams[key] | paramValue:key}})</span>
         </div>
     </ng-template>

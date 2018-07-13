@@ -93,7 +93,9 @@ export class ItemUtilityService {
             .filter(key => key === item.majorCategory)
             .forEach(key => {
                 _.forEach(Const.ItemFieldKeys.EquipmentRatio, param => {
-                    if (result[param]) { result[param] = result[param] * ratio.equipmentRatio[key]; }
+                    if (result[param]) {
+                        result[param] = result[param] * ratio.equipmentRatio[key];
+                    }
                 });
             });
         // 装備アイテム能力値倍率の適用
@@ -103,6 +105,10 @@ export class ItemUtilityService {
                 if (result[param]) { result[param] *= ratio.itemRatios[param]; }
             })
 
+        // 攻撃回数の整数化
+        if (result.cnt) {
+            result.cnt = Math.round(result.cnt);
+        }
         return result;
     }
 
@@ -230,8 +236,8 @@ export class ItemUtilityService {
         if (!filter) { return baseItems; }
 
         // 名称フィルタ生成
-        const regexItemName: RegExp = (filter.regexItemName) ? new RegExp(filter.regexItemName.replace(/([\[\].])/g, '\\$1'), 'gi') : null;
-        const regexSkillName: RegExp = (filter.regexSkillName) ? new RegExp(filter.regexSkillName.replace(/([\[\].])/g, '\\$1'), 'gi') : null;
+        const regexItemName: RegExp = (filter.regexItemName) ? new RegExp(filter.regexItemName.replace(/([\[\]])/g, '\\$1'), 'gi') : null;
+        const regexSkillName: RegExp = (filter.regexSkillName) ? new RegExp(filter.regexSkillName.replace(/([\[\]])/g, '\\$1'), 'gi') : null;
 
         return _.chain(baseItems)
             .union(_.toArray(this.manager.jobs), _.toArray(this.manager.species))

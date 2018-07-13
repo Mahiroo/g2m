@@ -67,7 +67,10 @@ export class ItemListComponent implements OnInit {
      * 選択可能フラグ.
      */
     @Input() selectable: boolean;
-
+    /**
+     * 基本値表示フラグ.
+     */
+    @Input() showBase: boolean;
     /**
      * データ変更時イベント.
      */
@@ -141,6 +144,17 @@ export class ItemListComponent implements OnInit {
             if (this._skillRegex.exec(skill)) { result.push('highlight'); }
         }
         return result;
+    }
+
+    /**
+     * アイテム設定値取得.
+     * @param key キー値
+     */
+    getValue(item: g2.IInventory, key: string): any {
+        if (this.showBase && item.baseParams) {
+            if (item.baseParams[key]) { return item.baseParams[key]; }
+        }
+        return item[key];
     }
 
     /**
