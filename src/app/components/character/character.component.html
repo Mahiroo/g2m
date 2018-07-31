@@ -47,6 +47,35 @@
                     </ng-template>
                 </tr>
             </table>
+            <table class="params-table" *ngIf="!!this.equipmentRatios.length">
+                <caption>戦闘能力値</caption>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <ng-template ngFor let-key [ngForOf]="BATTLE_PARAMS">
+                            <th class="param-name">{{key | paramName }}</th>
+                        </ng-template>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>本体</th>
+                        <ng-template ngFor let-key [ngForOf]="BATTLE_PARAMS">
+                            <td class="param-value">
+                                <span>{{editCharacter[key] | paramValue:key}}</span>
+                            </td>
+                        </ng-template>
+                    </tr>
+                    <tr>
+                        <th>装備品合計</th>
+                        <ng-template ngFor let-key [ngForOf]="BATTLE_PARAMS">
+                            <td class="param-value">
+                                <span>{{attachedItemParams[key] | paramValue:key}}</span>
+                            </td>
+                        </ng-template>
+                    </tr>
+                </tbody>
+            </table>
         </section>
     </section>
 

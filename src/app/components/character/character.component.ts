@@ -2,7 +2,7 @@ import * as _ from 'underscore';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import * as g2 from '../../models';
-import { PARAMETER_KEYS } from '../../common/const';
+import { PARAMETER_KEYS, ItemFieldKeys } from '../../common/const';
 import { isSameText } from '../../common/function';
 import { CharacterUtilityService, ItemUtilityService, ManagerService, IFilter } from '../../services'
 import { AddItemDialogComponent } from './dialogs/add-item-dialog.component';
@@ -22,7 +22,7 @@ import { ItemFilterDialogComponent } from '../common/item-list/dialogs/item-filt
 export class CharacterComponent implements OnInit {
 
     readonly BASE_PARAMS = PARAMETER_KEYS.BASE;
-    readonly BATTLE_PARAMS = PARAMETER_KEYS.BATTLE;
+    readonly BATTLE_PARAMS = ItemFieldKeys.Battle;
     readonly LSKEY_FILTER = 'character.search-item-dialog.filter';
     readonly LSKEY_SETTINGS = 'character.settings';
 
@@ -30,6 +30,10 @@ export class CharacterComponent implements OnInit {
      * 装備アイテム情報リスト.
      */
     attachedItems: g2.IItem[];
+    /**
+     * 装備品能力値合計.
+     */
+    attachedItemParams: g2.IParameters;
     /**
      * 所有スキル情報リスト.
      */
@@ -294,10 +298,22 @@ export class CharacterComponent implements OnInit {
     refresh(): void {
         // キャラクター再計算
         this.charUtil.recalc(this.editCharacter);
+        // 装備品倍率を配列に変換
+        this.equipmentRatios = _.chain(this.editCharacter.itemRatio.equipmentRatio).keys().map(key => {
+            return { key: key, value: this.editCharacter.itemRatio.equipmentRatio[key] };
+        }).value();
         // 所持スキルを配列に変換
         this.attachedSkills = _.chain(this.editCharacter.skills).toArray().sortBy(skill => skill.seq).value();
         // 装備アイテムリストを取得
-        this.attachedItems = this.charUtil.getAllItems(this.editCharacter);
+        this.attachedItems = _.map(this.charUtil.getAllItems(this.editCharacter), item => this.itemUtil.applyRatio(item, this.editCharacter.itemRatio));
+        this.attachedItemParams = {};
+        _.forEach(this.attachedItems, item => {
+            _.forEach(PARAMETER_KEYS.BATTLE, key => {
+                if (!item[key]) { return; }
+                if (!this.attachedItemParams[key]) { this.attachedItemParams[key] = 0; }
+                this.attachedItemParams[key] += item[key];
+            });
+        });
         this.beingUsedItems = {};
         _.forEach(this.attachedItems, item => {
             const itemName: string = item.displayName.replace(/\[.+\]]/, '');
@@ -306,11 +322,6 @@ export class CharacterComponent implements OnInit {
                 this.beingUsedItems[itemName] = attachedCharacters;
             }
         });
-
-        // 装備品倍率を配列に変換
-        this.equipmentRatios = _.chain(this.editCharacter.itemRatio.equipmentRatio).keys().map(key => {
-            return { key: key, value: this.editCharacter.itemRatio.equipmentRatio[key] };
-        }).value();
     }
 
     /**
