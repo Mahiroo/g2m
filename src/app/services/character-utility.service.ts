@@ -116,7 +116,6 @@ export class CharacterUtilityService {
         if (character.personality) { mergeSkills(this.manager.items[character.personality].skills, true); }
         if (character.personality2) { mergeSkills(this.manager.items[character.personality2].skills, true); }
         if (character.npc) {
-
             _.forEach(this.manager.nonePlayerCharacters[character.npc].equipments, item => {
                 const equipment = this.itemUtil.getItem(item);
                 if (equipment) { mergeSkills(equipment.skills, true); }
@@ -142,6 +141,7 @@ export class CharacterUtilityService {
         const result: g2.ICharacter = {};
         result.name = (name) ? name : '新規作成';
         result.additionalParams = {};
+        result.detailParameters = { base: {}, equipment: {}, skill: {} };
         result.equipments = [];
         return this.recalc(result);
     }
@@ -299,6 +299,8 @@ export class CharacterUtilityService {
         this.recalcItemRatio(character);
         // 成長率再計算
         this.recalcGrowthRatio(character);
+        // 戦闘能力値再計算
+        this.recalcBattleParams(character);
         return character;
     }
 
@@ -328,6 +330,33 @@ export class CharacterUtilityService {
                 character[param] += (character.additionalParams[param] > 10) ? 10 : character.additionalParams[param];
             });
         }
+        return character;
+    }
+
+    /**
+     * 戦闘能力値再計算.
+     * @param character キャラクター情報
+     */
+    recalcBattleParams(character: g2.ICharacter): g2.ICharacter {
+        character.detailParameters = { base: {}, equipment: {}, skill: {} };
+        // 種族/職業or副職が未設定の場合は終了
+        if (!character.species || (!character.job && !character.subJob)) { return; }
+        // 職業倍率の取得
+        const jobRate: IJobRate = getJobRate(this.manager, character.job || character.subJob);
+        // 格闘フラグの設定
+        character.grapple = !!(_.find(this.getAllItems(character), item => !!(item.atk)));
+
+        character.mhp = character.detailParameters.base.mhp = getBattleParam(character, '最大HP', jobRate);
+        character.atk = character.detailParameters.base.atk = getBattleParam(character, '攻撃力', jobRate);
+        character.hit = character.detailParameters.base.hit = getBattleParam(character, '命中精度', jobRate);
+        character.crt = character.detailParameters.base.crt = getBattleParam(character, '必殺率', jobRate);
+        character.cnt = character.detailParameters.base.cnt = getBattleParam(character, '攻撃回数', jobRate);
+        character.def = character.detailParameters.base.def = getBattleParam(character, '防御力', jobRate);
+        character.eva = character.detailParameters.base.eva = getBattleParam(character, '回避能力', jobRate);
+        character.mat = character.detailParameters.base.mat = getBattleParam(character, '魔法攻撃力', jobRate);
+        character.mdf = character.detailParameters.base.mdf = getBattleParam(character, '魔法防御力', jobRate);
+        character.rcv = character.detailParameters.base.rcv = getBattleParam(character, '魔法回復量', jobRate);
+        character.trp = character.detailParameters.base.trp = getBattleParam(character, '罠解除能力', jobRate);
         return character;
     }
 
@@ -447,5 +476,103 @@ export class CharacterUtilityService {
     save(): void {
         this.manager.localStorage.set(this.LSKEY_CHARACTERS, this.export());
     }
+}
+
+/**
+ * 戦闘能力値取得.
+ * @param character キャラクター情報
+ * @param paramName パラメータ名
+ * @param jobRate 職業倍率
+ */
+function getBattleParam(character: g2.ICharacter, paramName: string, jobRate: IJobRate): number {
+
+    // レベル倍率の算出
+    let levelRatio = character.level;
+    if (character.level > 30) { levelRatio += ((character.level - 30) * 0.5); }
+    if (character.level > 60) { levelRatio += ((character.level - 60) * 0.75); }
+    if (character.level > 80) { levelRatio += ((character.level - 80) * 2.25); }
+
+
+    let result: number = 0;
+    switch (paramName) {
+        case '最大HP':
+            result = 11 + character.vit + character.vit * levelRatio * jobRate.mhp;
+            break;
+        case '攻撃力':
+            result = character.str + character.str * levelRatio * jobRate.atk / 10;
+            break;
+        case '命中精度':
+            result = 50 + (character.str + character.str * levelRatio * jobRate.hit / 10) / 2 + (character.agi + character.agi * levelRatio * jobRate.hit / 10) / 2;
+            break;
+        case '必殺率':
+        case '攻撃回数':
+            return 0;
+        case '防御力':
+            result = character.vit + character.vit * levelRatio * jobRate.def / 10;
+            break;
+        case '回避能力':
+            result = (character.agi + character.agi * levelRatio * jobRate.eva / 10) / 2 + (character.luc + character.luc * levelRatio * jobRate.eva / 10) / 2;
+            break;
+        case '魔法攻撃力':
+            result = character.int + character.int * levelRatio * jobRate.mat / 10;
+            break;
+        case '魔法回復量':
+            result = character.men + character.men * levelRatio * jobRate.rcv / 10;
+            break;
+        case '魔法防御力':
+            result = character.men + character.men * levelRatio * jobRate.mdf / 10;
+            break;
+        case '罠解除能力':
+            return 0;
+    }
+    return result;
+}
+
+/**
+ * 才能倍率取得.
+ * @param character キャラ歌ー情報.
+ * @param paramName パラメータ名
+ */
+function getTalentRatio(character: g2.ICharacter, paramName: string): number {
+    if (paramName === '攻撃回数') {
+        if (character.skills[`[才能] ${paramName}`] && character.skills[`[無能] ${paramName}`]) { return 0.8; }
+        if (character.skills[`[才能] ${paramName}`]) { return 1.3; }
+        if (character.skills[`[無能] ${paramName}`]) { return 0.6; }
+    } else {
+        if (character.skills[`[才能] ${paramName}`] && character.skills[`[無能] ${paramName}`]) { return 1; }
+        if (character.skills[`[才能] ${paramName}`]) { return 1.5; }
+        if (character.skills[`[無能] ${paramName}`]) { return 0.5; }
+    }
+    return 1;
+}
+
+function getJobRate(manager: ManagerService, jobName: string): IJobRate {
+    let job: g2.IJob = manager.jobs[jobName];
+    if (job && job.lower) { job = manager.jobs[job.lower]; }
+    return (job) ? jobRates[job.name] : null;
+}
+interface IJobRate extends g2.IParameters { }
+const jobRates: _.Dictionary<IJobRate> = {
+    '戦士': { mhp: 1.2, atk: 1.0, hit: 1.5, def: 1.4, eva: 0.4, mat: 0.6, rcv: 1.7, mdf: 0.8, trp: 0 },
+    '剣士': { mhp: 1.0, atk: 1.1, hit: 2.5, def: 1.2, eva: 0.8, mat: 0.6, rcv: 1.5, mdf: 0.4, trp: 0, },
+    '盗賊': { mhp: 0.75, atk: 0.8, hit: 2.0, def: 0.6, eva: 1.2, mat: 0.6, rcv: 1.5, mdf: 0.4, trp: 0, },
+    '僧侶': { mhp: 0.65, atk: 0.7, hit: 0.5, def: 0.8, eva: 0.4, mat: 0.9, rcv: 4.0, mdf: 1.2, trp: 0, },
+    '魔法使い': { mhp: 0.6, atk: 0.3, hit: 0.8, def: 0.2, eva: 0.8, mat: 1.5, rcv: 1.7, mdf: 0.8, trp: 0, },
+    '狩人': { mhp: 0.9, atk: 1.0, hit: 1.0, def: 0.8, eva: 0.8, mat: 0.8, rcv: 1.5, mdf: 0.4, trp: 0, },
+    '修道者': { mhp: 0.85, atk: 0.8, hit: 1.0, def: 1.0, eva: 0.8, mat: 1.0, rcv: 2.0, mdf: 0.8, trp: 0, },
+    '侍': { mhp: 0.9, atk: 2.0, hit: 1.5, def: 0.8, eva: 0.6, mat: 0.7, rcv: 1.6, mdf: 0.4, trp: 0, },
+    '剣聖': { mhp: 1.0, atk: 0.9, hit: 2.8, def: 1.2, eva: 1.0, mat: 0.7, rcv: 1.5, mdf: 0.4, trp: 0, },
+    '秘法剣士': { mhp: 1.0, atk: 1.0, hit: 1.9, def: 1.2, eva: 0.8, mat: 1.2, rcv: 2.5, mdf: 0.8, trp: 0, },
+    '賢者': { mhp: 0.85, atk: 0.8, hit: 1.3, def: 1.0, eva: 0.6, mat: 1.4, rcv: 3.0, mdf: 1.2, trp: 0, },
+    '忍者': { mhp: 0.8, atk: 1.0, hit: 2.2, def: 1.0, eva: 1.4, mat: 0.9, rcv: 1.5, mdf: 0.8, trp: 0, },
+    '君主': { mhp: 1.1, atk: 1.0, hit: 1.5, def: 1.6, eva: 0.4, mat: 0.5, rcv: 2.5, mdf: 0.8, trp: 0, },
+    'ロイヤルライン': { mhp: 0.85, atk: 0.8, hit: 1.0, def: 1.0, eva: 0.8, mat: 1.0, rcv: 2.0, mdf: 0.8, trp: 0, },
+};
+
+
+
+interface IParameterRate {
+    baseRate: number;
+    totalRate: number;
 
 }

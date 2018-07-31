@@ -10,6 +10,23 @@ export interface ICharacter extends IParameters {
      */
     additionalParams?: IParameters;
     /**
+     * 詳細パラメータ.
+     */
+    detailParameters?: {
+        /**
+         * 基本値.
+         */
+        base?: IParameters,
+        /**
+         * スキル.
+         */
+        skill?: IParameters,
+        /**
+         * 装備品.
+         */
+        equipment?: IParameters,
+    }
+    /**
      * アイテム装備可能数.
      */
     equipmentCount?: number;
@@ -25,6 +42,10 @@ export interface ICharacter extends IParameters {
      * 性別.
      */
     gender?: string;
+    /**
+     * 格闘フラグ.
+     */
+    grapple?: boolean;
     /**
      * 成長倍率.
      */
