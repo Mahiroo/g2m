@@ -13,7 +13,7 @@ export class ParamValuePipe implements PipeTransform {
             case 'num':
                 if (key === 'crt') { return parseFloat(value).toFixed(1) + '%'; }
                 if (key === 'cnt') { return parseFloat(value).toFixed(1); }
-                return String(Math.round(value));
+                return String(Math.floor(value));
             case 'signedNum':
                 if (value >= 0) { return '+' + String(value); }
                 return String(value);

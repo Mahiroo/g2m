@@ -21,7 +21,7 @@ import {
     MatTooltipModule,
 } from '@angular/material';
 import { PipesModule } from '../../pipes/pipes.module';
-import { CharacterManagerService, ItemUtilityService, ManagerService } from '../../services';
+import { CharacterManagerService, ItemUtilityService, ManagerService, CharacterUtilityService } from '../../services';
 import { ItemListModule } from '../common/item-list/item-list.module';
 import { InventoryComponent } from './inventory.component';
 import { InventoryMenuComponent } from './inventory-menu.component';
@@ -57,6 +57,6 @@ import { ItemRegisterDialogComponent } from './dialogs/item-register-dialog.comp
     declarations: [InventoryComponent, InventoryMenuComponent, SettingsDialogComponent, DataManagementDialogComponent, ItemRegisterDialogComponent],
     entryComponents: [SettingsDialogComponent, DataManagementDialogComponent, ItemRegisterDialogComponent],
     exports: [InventoryComponent, InventoryMenuComponent],
-    providers: [ManagerService, ItemUtilityService, CharacterManagerService],
+    providers: [ManagerService, ItemUtilityService, CharacterManagerService, CharacterUtilityService],
 })
 export class InventoryModule { }

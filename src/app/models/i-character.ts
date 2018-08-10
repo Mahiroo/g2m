@@ -18,6 +18,10 @@ export interface ICharacter extends IParameters {
          */
         base?: IParameters,
         /**
+         * レベル比例値.
+         */
+        level?: IParameters,
+        /**
          * スキル.
          */
         skill?: IParameters,
