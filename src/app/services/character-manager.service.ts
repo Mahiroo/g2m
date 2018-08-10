@@ -23,7 +23,7 @@ const EQUIPMENT_COUNT = {
  * キャラクターユーティリティサービス.
  */
 @Injectable()
-export class CharacterUtilityService {
+export class CharacterManagerService {
 
     /**
      * ローカルストレージキー値 : キャラクター情報.

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MatDialogConfig, MatDialogRef, MatTabChangeEvent } from '@angular/material';
 import * as g2 from '../../../models';
-import { CharacterUtilityService } from '../../../services';
+import { CharacterManagerService } from '../../../services';
 
 @Component({
     templateUrl: './data-management-dialog.component.html',
@@ -29,9 +29,9 @@ export class DataManagementDialogComponent implements OnInit {
 
     /**
      * コンストラクタ.
-     * @param charUtil
+     * @param charManager
      */
-    constructor(public dialogRef: MatDialogRef<DataManagementDialogComponent>, private charUtil: CharacterUtilityService) { }
+    constructor(public dialogRef: MatDialogRef<DataManagementDialogComponent>, private charManager: CharacterManagerService) { }
 
     /**
      * 初期化イベント.
@@ -52,7 +52,7 @@ export class DataManagementDialogComponent implements OnInit {
      * データエクスポート.
      */
     exportData(): void {
-        const jsonData = this.charUtil.export();
+        const jsonData = this.charManager.export();
         const fileName = 'g2m.characters.json';
         const blob = new Blob([JSON.stringify(jsonData, null, '\t')], { 'type': 'text/json' });
 
@@ -90,7 +90,7 @@ export class DataManagementDialogComponent implements OnInit {
     importData(): void {
         const reader = new FileReader();
         reader.addEventListener('load', () => {
-            this.charUtil.import(JSON.parse(reader.result));
+            this.charManager.import(JSON.parse(reader.result));
             alert(`データの復元が完了しました。`);
             this.dialogRef.close(true);
         }, true);

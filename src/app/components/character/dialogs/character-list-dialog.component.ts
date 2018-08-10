@@ -2,7 +2,7 @@ import * as _ from 'underscore';
 import { Component, OnInit } from '@angular/core';
 import { MatDialogConfig, MatDialogRef, MatTabChangeEvent } from '@angular/material';
 import * as g2 from '../../../models';
-import { ManagerService, CharacterUtilityService } from '../../../services';
+import { ManagerService, CharacterManagerService } from '../../../services';
 
 @Component({
     templateUrl: './character-list-dialog.component.html',
@@ -34,7 +34,7 @@ export class CharacterListDialogComponent implements OnInit {
      * @param manager マネージャサービス
      * @param charUtil キャラクタユーティリティ
      */
-    constructor(public dialogRef: MatDialogRef<CharacterListDialogComponent>, private manager: ManagerService, private charUtil: CharacterUtilityService) { }
+    constructor(public dialogRef: MatDialogRef<CharacterListDialogComponent>, private manager: ManagerService, private charManager: CharacterManagerService) { }
 
     /**
      * 初期化イベント.
@@ -55,7 +55,7 @@ export class CharacterListDialogComponent implements OnInit {
      * ビルド構成情報取得.
      */
     getBuildInfo(character: g2.ICharacter): string {
-        return this.charUtil.getBuildPartsInfo(character);
+        return this.charManager.getBuildPartsInfo(character);
     }
 
     /**
@@ -74,7 +74,7 @@ export class CharacterListDialogComponent implements OnInit {
      */
     orderDown(): void {
         if (!this.selectedCharacter) { return; }
-        this.charUtil.recalcOrder(this.selectedCharacter, 1, true);
+        this.charManager.recalcOrder(this.selectedCharacter, 1, true);
         this.refresh();
     }
 
@@ -83,7 +83,7 @@ export class CharacterListDialogComponent implements OnInit {
      */
     orderUp(): void {
         if (!this.selectedCharacter) { return; }
-        this.charUtil.recalcOrder(this.selectedCharacter, -1, true);
+        this.charManager.recalcOrder(this.selectedCharacter, -1, true);
         this.refresh();
     }
 
@@ -91,7 +91,7 @@ export class CharacterListDialogComponent implements OnInit {
      * 最新化.
      */
     refresh(): void {
-        this.characters = _.sortBy(this.charUtil.characters, characters => characters.order);
+        this.characters = _.sortBy(this.charManager.characters, characters => characters.order);
     }
 
     /**
@@ -103,9 +103,9 @@ export class CharacterListDialogComponent implements OnInit {
         const isEdit: boolean = (this.editCharacter && this.selectedCharacter.id === this.editCharacter.id);
         const msg: string = ((isEdit) ? "現在編集中の" : "") + `キャラクター[ ${this.selectedCharacter.name} ]を削除してよろしいですか？`;
         if (!confirm(msg)) { return; }
-        this.charUtil.remove(this.selectedCharacter, true);
+        this.charManager.remove(this.selectedCharacter, true);
         if (isEdit) {
-            this.dialogRef.close(this.charUtil.create());
+            this.dialogRef.close(this.charManager.create());
         } else {
             this.refresh();
         }

@@ -4,7 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material';
 import * as g2 from '../../models';
 import { PARAMETER_KEYS, ItemFieldKeys } from '../../common/const';
 import { isSameText } from '../../common/function';
-import { CharacterUtilityService, ItemUtilityService, ManagerService, IFilter } from '../../services'
+import { CharacterManagerService, ItemUtilityService, ManagerService, IFilter } from '../../services'
 import { AddItemDialogComponent } from './dialogs/add-item-dialog.component';
 import { CharacterListDialogComponent } from './dialogs/character-list-dialog.component';
 import { DataManagementDialogComponent } from './dialogs/data-management-dialog.component';
@@ -79,17 +79,17 @@ export class CharacterComponent implements OnInit {
      * コンストラクタ.
      * @param manager マネージャサービス
      * @param itemUtil アイテムユーティリティ
-     * @param charUtil キャラクタユーティリティ
+     * @param charManager キャラクタユーティリティ
      */
-    constructor(private dialog: MatDialog, private manager: ManagerService, private itemUtil: ItemUtilityService, private charUtil: CharacterUtilityService) { }
+    constructor(private dialog: MatDialog, private manager: ManagerService, private itemUtil: ItemUtilityService, private charManager: CharacterManagerService) { }
 
     /**
      * 初期化イベント.
      */
     ngOnInit() {
         this.settings = this.manager.localStorage.get(this.LSKEY_SETTINGS) || {};
-        if (this.settings.editId) { this.editCharacter = _.find(this.charUtil.characters, character => character.id === this.settings.editId); }
-        if (!this.editCharacter) { this.editCharacter = this.charUtil.create(); }
+        if (this.settings.editId) { this.editCharacter = _.find(this.charManager.characters, character => character.id === this.settings.editId); }
+        if (!this.editCharacter) { this.editCharacter = this.charManager.create(); }
         this.filter = this.manager.localStorage.get(this.LSKEY_FILTER) || ItemUtilityService.INITIAL_FILTER;
         this.refresh();
     }
@@ -98,7 +98,7 @@ export class CharacterComponent implements OnInit {
      * 新規キャラクター作成.
      */
     createNewCharacter(): void {
-        this.editCharacter = this.charUtil.create();
+        this.editCharacter = this.charManager.create();
         this.updated = false;
         this.refresh();
         this.saveSettings();
@@ -120,7 +120,7 @@ export class CharacterComponent implements OnInit {
      * ビルド構成情報取得.
      */
     getBuildInfo(): string {
-        return this.charUtil.getBuildPartsInfo(this.editCharacter);
+        return this.charManager.getBuildPartsInfo(this.editCharacter);
     }
 
     /**
@@ -184,7 +184,7 @@ export class CharacterComponent implements OnInit {
         dialogRef.componentInstance.editCharacter = this.editCharacter;
         dialogRef.afterClosed().subscribe(result => {
             if (!result) { return; }
-            this.editCharacter = this.charUtil.getClone(result);
+            this.editCharacter = this.charManager.getClone(result);
             this.selectedItem = null;
             this.selectedSkill = null;
             this.updated = false;
@@ -297,7 +297,7 @@ export class CharacterComponent implements OnInit {
      */
     refresh(): void {
         // キャラクター再計算
-        this.charUtil.recalc(this.editCharacter);
+        this.charManager.recalc(this.editCharacter);
         // 装備品倍率を配列に変換
         this.equipmentRatios = _.chain(this.editCharacter.itemRatio.equipmentRatio).keys().map(key => {
             return { key: key, value: this.editCharacter.itemRatio.equipmentRatio[key] };
@@ -305,7 +305,7 @@ export class CharacterComponent implements OnInit {
         // 所持スキルを配列に変換
         this.attachedSkills = _.chain(this.editCharacter.skills).toArray().sortBy(skill => skill.seq).value();
         // 装備アイテムリストを取得
-        this.attachedItems = _.map(this.charUtil.getAllItems(this.editCharacter), item => this.itemUtil.applyRatio(item, this.editCharacter.itemRatio));
+        this.attachedItems = _.map(this.charManager.getAllItems(this.editCharacter), item => this.itemUtil.applyRatio(item, this.editCharacter.itemRatio));
         this.attachedItemParams = {};
         _.forEach(this.attachedItems, item => {
             _.forEach(PARAMETER_KEYS.BATTLE, key => {
@@ -317,7 +317,7 @@ export class CharacterComponent implements OnInit {
         this.beingUsedItems = {};
         _.forEach(this.attachedItems, item => {
             const itemName: string = item.displayName.replace(/\[.+\]]/, '');
-            const attachedCharacters: string[] = this.charUtil.getItemAttachedCharacters(item, this.editCharacter.id);
+            const attachedCharacters: string[] = this.charManager.getItemAttachedCharacters(item, this.editCharacter.id);
             if (attachedCharacters.length) {
                 this.beingUsedItems[itemName] = attachedCharacters;
             }
@@ -329,9 +329,9 @@ export class CharacterComponent implements OnInit {
      */
     remove(): void {
         if (!confirm(`編集中キャラクターを削除します。よろしいですか？`)) { return; }
-        if (this.charUtil.remove(this.editCharacter)) {
-            this.charUtil.save();
-            this.editCharacter = this.charUtil.create();
+        if (this.charManager.remove(this.editCharacter)) {
+            this.charManager.save();
+            this.editCharacter = this.charManager.create();
             this.refresh();
             this.updated = false;
         }
@@ -358,11 +358,11 @@ export class CharacterComponent implements OnInit {
      */
     save(): void {
         if (this.editCharacter.id) {
-            this.charUtil.mod(this.editCharacter);
+            this.charManager.mod(this.editCharacter);
         } else {
-            this.editCharacter = this.charUtil.add(this.editCharacter);
+            this.editCharacter = this.charManager.add(this.editCharacter);
         }
-        this.charUtil.save();
+        this.charManager.save();
         this.updated = false;
         this.saveSettings();
     }

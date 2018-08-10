@@ -24,7 +24,7 @@ import {
     MatTooltipModule,
 } from '@angular/material';
 import { PipesModule } from '../../pipes/pipes.module';
-import { CharacterUtilityService, ItemUtilityService, ManagerService } from '../../services';
+import { CharacterManagerService, ItemUtilityService, ManagerService } from '../../services';
 import { ItemInfoModule } from '../common/item-info/item-info.module';
 import { ItemListModule } from '../common/item-list/item-list.module';
 
@@ -89,6 +89,6 @@ import { SearchItemDialogComponent } from './dialogs/search-item-dialog.componen
         SearchItemDialogComponent,
     ],
     exports: [CharacterComponent, CharacterMenuComponent],
-    providers: [ManagerService, ItemUtilityService, CharacterUtilityService],
+    providers: [ManagerService, ItemUtilityService, CharacterManagerService],
 })
 export class CharacterModule { }
