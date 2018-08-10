@@ -22,7 +22,7 @@ import { ItemFilterDialogComponent } from '../common/item-list/dialogs/item-filt
 export class CharacterComponent implements OnInit {
 
     readonly BASE_PARAMS = PARAMETER_KEYS.BASE;
-    readonly BATTLE_PARAMS = ItemFieldKeys.Battle;
+    readonly BATTLE_PARAMS = ['mhp', 'atk', 'hit', 'cnt', 'crt', 'def', 'eva', 'mat', 'mdf', 'rcv', 'trp'];
     readonly LSKEY_FILTER = 'character.search-item-dialog.filter';
     readonly LSKEY_SETTINGS = 'character.settings';
 
