@@ -162,32 +162,71 @@ export class CharacterUtilityService {
         character.detailParameters = { base: {}, level: {}, equipment: {}, skill: {} };
         // 種族/職業or副職が未設定の場合は終了
         if (!character.species || (!character.job && !character.subJob)) { return; }
+
         // レベル倍率の算出
-        let levelRatio = character.level;
-        if (character.level > 30) { levelRatio += ((character.level - 30) * 0.5); }
-        if (character.level > 60) { levelRatio += ((character.level - 60) * 0.75); }
-        if (character.level > 100) { levelRatio += ((character.level - 100) * 2.25); }
+        let levelRatio = (character.level > 100) ? 100 : character.level;
+        if (character.level > 30) { levelRatio += 0.5 * ((character.level > 100) ? 70 : (character.level - 30)); }
+        if (character.level > 60) { levelRatio += 0.75 * ((character.level > 100) ? 40 : (character.level - 60)); }
+        if (character.species.indexOf('人間') < 0) {
+            // 人間以外
+            if (character.level > 80) { levelRatio += 2.25 * (character.level - 80); }
+            if (character.level > 100) { levelRatio += 2.25 * (character.level - 100); }
+        } else {
+            // 人間
+            if (character.level > 100) { levelRatio += 1.125 * (character.level - 100); }
+        }
+
         // 職業倍率の取得
         let job: g2.IJob = this.manager.jobs[character.job || character.subJob];
         if (job && job.lower) { job = this.manager.jobs[job.lower]; }
         const jobRate: IJobRate = (job) ? jobRates[job.name] : null;
+        // 基本値とレベル比例値の算出
+        _.forEach(PARAMETER_KEYS.BATTLE, key => this.getBattleParam(character, key, levelRatio, jobRate));
 
-        // 基本値とレベル比例値の取得
-        this.getBattleParam(character, 'mhp', levelRatio, jobRate);
-        this.getBattleParam(character, 'atk', levelRatio, jobRate);
-        this.getBattleParam(character, 'hit', levelRatio, jobRate);
-        this.getBattleParam(character, 'def', levelRatio, jobRate);
-        this.getBattleParam(character, 'eva', levelRatio, jobRate);
-        this.getBattleParam(character, 'mat', levelRatio, jobRate);
-        this.getBattleParam(character, 'mdf', levelRatio, jobRate);
-        this.getBattleParam(character, 'rcv', levelRatio, jobRate);
-        this.getBattleParam(character, 'trp', levelRatio, jobRate);
+        // 才能スキル抽出
+        const aptitudes: _.Dictionary<{ aptitude?: boolean, lackOfTalent?: boolean }> = {};
+        _.chain(character.skills)
+            .filter(skill => !!(skill.aptitude))
+            .forEach((skill: g2.Skills.IAptitude) => {
+                if (!aptitudes[skill.aptitude.key]) { aptitudes[skill.aptitude.key] = {}; }
+                if (skill.aptitude.lackOfTalent) {
+                    aptitudes[skill.aptitude.key].lackOfTalent = true;
+                } else {
+                    aptitudes[skill.aptitude.key].aptitude = true;
+                }
+            });
 
-        // 格闘フラグの取得
+        // 補正前能力値算出
+        _.forEach(PARAMETER_KEYS.BATTLE, key => {
+
+            // 才能補正
+            let aptitude: number = 1;
+            if (aptitudes[key]) {
+                // TODO : cnt の倍率
+                if (aptitudes[key].aptitude !== aptitudes[key].lackOfTalent) { aptitude = (aptitudes[key].aptitude) ? 1.5 : 0.5; }
+            }
+            character[key] = (character.detailParameters.base[key] + character.detailParameters.level[key]) * aptitude;
+
+            // 最大HPの基本値加算
+            if (key === 'mhp') { character[key] = Math.round(10.5 + character[key]); }
+            // 罠解除能力の基本値加算
+            if (key === 'trp') { character[key] += jobRate.trpBase; }
+        });
+
+        // TODO : 変換スキル補正
+        const convertSkills: g2.Skills.IConvertParam[] = _.filter(character.skills, (skill: g2.Skills.IConvertParam) => !!(skill.convertParam));
+        _.forEach(convertSkills, skill => {
+            _.forEach(skill.convertParam, detail => {
+                character[detail.toKey] += Math.floor(character[detail.fromKey]) * detail.rate;
+            })
+        });
+
+        // 格闘補正
         character.grapple = !(_.find(this.getAllItems(character), item => !!(item.atk)));
         if (character.grapple) {
             character.hit *= 1.6;
         }
+
         return character;
     }
     /**
@@ -199,71 +238,52 @@ export class CharacterUtilityService {
      */
     getBattleParam(character: g2.ICharacter, key: string, levelRatio: number, jobRate: IJobRate) {
 
-        // 才能倍率の取得
-        let aptitudeRatio: number = 1;
-        let aptitude: boolean = false;
-        let lackOfTalent: boolean = false;
-        _.forEach(character.skills, (skill: g2.Skills.IAptitude) => {
-            if (!skill.aptitude || skill.aptitude.key !== key) { return; }
-            if (!aptitude) { aptitude = !(skill.aptitude.lackOfTalent); }
-            if (!lackOfTalent) { lackOfTalent = skill.aptitude.lackOfTalent; }
-        });
-        if (key === 'cnt') {
-            // TODO : 攻撃回数の才能倍率
-        } else {
-            if (aptitude !== lackOfTalent) {
-                aptitudeRatio = (aptitude) ? 1.5 : 0.5;
-            }
-        }
-
         // 基本値とレベル比例値の算出
         switch (key) {
             case 'mhp':
-                character.detailParameters.base[key] = 11;
-                character.detailParameters.level[key] = (character.vit + character.vit * levelRatio * jobRate[key]);
+                character.detailParameters.base[key] = character.vit;
+                character.detailParameters.level[key] = (character.vit * levelRatio * jobRate[key] * character.growthRatio);
                 break;
 
             case 'atk':
-                character.detailParameters.base[key] = 0;
-                character.detailParameters.level[key] = (character.str + character.str * levelRatio * jobRate[key]);
+                character.detailParameters.base[key] = character.str;
+                character.detailParameters.level[key] = (character.str * levelRatio * jobRate[key] * character.growthRatio);
                 break;
 
             case 'hit':
-                character.detailParameters.base[key] = 50;
-                character.detailParameters.level[key] = (character.str + character.str * levelRatio * jobRate[key]) / 2
-                character.detailParameters.level[key] += (character.agi + character.agi * levelRatio * jobRate[key]) / 2;
+                character.detailParameters.base[key] = 50 + (character.str + character.agi) / 2;
+                character.detailParameters.level[key] = (character.str * levelRatio * jobRate[key] * character.growthRatio) / 2
+                character.detailParameters.level[key] += (character.agi * levelRatio * jobRate[key] * character.growthRatio) / 2;
                 break;
 
             case 'def':
-                character.detailParameters.base[key] = 0;
-                character.detailParameters.level[key] = (character.vit + character.vit * levelRatio * jobRate[key]);
+                character.detailParameters.base[key] = character.vit;
+                character.detailParameters.level[key] = (character.vit * levelRatio * jobRate[key] * character.growthRatio);
                 break;
 
             case 'eva':
-                character.detailParameters.base[key] = 0;
-                character.detailParameters.level[key] = (character.agi + character.agi * levelRatio * jobRate[key]) / 2;
-                character.detailParameters.level[key] += (character.luc + character.luc * levelRatio * jobRate[key]) / 2;
+                character.detailParameters.base[key] = (character.agi + character.luc) / 2;
+                character.detailParameters.level[key] = (character.agi * levelRatio * jobRate[key] * character.growthRatio) / 2;
+                character.detailParameters.level[key] += (character.luc * levelRatio * jobRate[key] * character.growthRatio) / 2;
                 break;
 
             case 'mat':
-                character.detailParameters.base[key] = 0;
-                character.detailParameters.level[key] = (character.int + character.int * levelRatio * jobRate[key]);
+                character.detailParameters.base[key] = character.int;
+                character.detailParameters.level[key] = (character.int * levelRatio * jobRate[key] * character.growthRatio);
                 break;
 
             case 'mdf':
             case 'rcv':
-                character.detailParameters.base[key] = 0;
-                character.detailParameters.level[key] = (character.men + character.men * levelRatio * jobRate[key]);
+                character.detailParameters.base[key] = character.men;
+                character.detailParameters.level[key] = (character.men * levelRatio * jobRate[key] * character.growthRatio);
                 break;
 
             case 'trp':
-                character.detailParameters.base[key] = jobRate.trpBase;
-                character.detailParameters.level[key] = (character.agi + character.agi * levelRatio * jobRate[key]);
-                character.detailParameters.level[key] += (character.luc + character.luc * levelRatio * jobRate[key]);
+                character.detailParameters.base[key] = character.agi + character.luc;
+                character.detailParameters.level[key] = (character.agi * levelRatio * jobRate[key] * character.growthRatio);
+                character.detailParameters.level[key] += (character.luc * levelRatio * jobRate[key] * character.growthRatio);
                 break
         }
-        character.detailParameters.level[key] *= aptitudeRatio;
-        character[key] = character.detailParameters.base[key] + character.detailParameters.level[key];
     }
 
     /**
@@ -342,9 +362,9 @@ export class CharacterUtilityService {
         _.forEach(character.skills, (skill: g2.Skills.IGrowthRatio) => {
             if (skill.growthRatio) { character.growthRatio *= skill.growthRatio; }
         });
-        character.growthRatio *= 100;
-        character.growthRatio = Math.round(character.growthRatio);
-        character.growthRatio /= 100;
+        // character.growthRatio *= 100;
+        // character.growthRatio = Math.round(character.growthRatio);
+        // character.growthRatio /= 100;
     }
 
 
