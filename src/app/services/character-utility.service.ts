@@ -261,8 +261,17 @@ export class CharacterUtilityService {
 
             case 'crt':
                 character.detailParameters.base[key] = 0;
-                character.detailParameters.level[key] = character.agi * 1;
-                character.detailParameters.level[key] += character.luc * 2;
+                character.detailParameters.level[key] = 0;
+                if (character.agi > 15) {
+                    character.detailParameters.base[key] += (character.agi - 15);
+                    character.detailParameters.level[key] += (character.agi - 15) * levelRatio * jobRate[key] * character.growthRatio;
+                }
+                if (character.luc > 15) {
+                    character.detailParameters.base[key] += (character.luc - 15) * 2;
+                    character.detailParameters.level[key] += (character.luc - 15) * 2 * levelRatio * jobRate[key] * character.growthRatio;
+                }
+                if (character.detailParameters.base[key] == 0) { character.detailParameters.base[key] = 1; };
+                character.detailParameters.level[key] = Math.floor(character.detailParameters.level[key]);
                 break;
 
             case 'def':
@@ -389,20 +398,20 @@ interface IJobRate extends g2.IParameters {
  * 職業倍率定義.
  */
 const jobRates: _.Dictionary<IJobRate> = {
-    "戦士": { mhp: 1.20, atk: 0.10, hit: 0.15, cnt: 1.00, crt: 1.00, def: 0.14, eva: 0.04, mat: 0.06, rcv: 0.17, mdf: 0.08, trp: 0.005 },
-    "剣士": { mhp: 1.00, atk: 0.11, hit: 0.25, cnt: 1.00, crt: 1.00, def: 0.12, eva: 0.08, mat: 0.06, rcv: 0.15, mdf: 0.04, trp: 0.005 },
-    "盗賊": { mhp: 0.75, atk: 0.08, hit: 0.20, cnt: 1.00, crt: 1.00, def: 0.06, eva: 0.12, mat: 0.06, rcv: 0.15, mdf: 0.04, trp: 0.050 },
-    "僧侶": { mhp: 0.65, atk: 0.07, hit: 0.05, cnt: 1.00, crt: 1.00, def: 0.08, eva: 0.04, mat: 0.09, rcv: 0.40, mdf: 0.12, trp: 0.005 },
-    "魔法使い": { mhp: 0.60, atk: 0.03, hit: 0.10, cnt: 1.00, crt: 1.00, def: 0.02, eva: 0.08, mat: 0.15, rcv: 0.17, mdf: 0.08, trp: 0.005 },
-    "狩人": { mhp: 0.90, atk: 0.10, hit: 0.10, cnt: 1.00, crt: 1.00, def: 0.08, eva: 0.08, mat: 0.08, rcv: 0.15, mdf: 0.04, trp: 0.015 },
-    "修道者": { mhp: 0.85, atk: 0.08, hit: 0.10, cnt: 1.00, crt: 1.00, def: 0.10, eva: 0.08, mat: 0.10, rcv: 0.20, mdf: 0.08, trp: 0.005 },
-    "侍": { mhp: 0.90, atk: 0.20, hit: 0.15, cnt: 1.00, crt: 1.00, def: 0.08, eva: 0.06, mat: 0.07, rcv: 0.16, mdf: 0.04, trp: 0.005 },
-    "剣聖": { mhp: 1.00, atk: 0.09, hit: 0.28, cnt: 1.00, crt: 1.00, def: 0.12, eva: 0.10, mat: 0.07, rcv: 0.15, mdf: 0.04, trp: 0.005 },
-    "秘法剣士": { mhp: 1.00, atk: 0.10, hit: 0.19, cnt: 1.00, crt: 1.00, def: 0.12, eva: 0.08, mat: 0.12, rcv: 0.25, mdf: 0.08, trp: 0.005 },
-    "賢者": { mhp: 0.85, atk: 0.08, hit: 0.13, cnt: 1.00, crt: 1.00, def: 0.10, eva: 0.06, mat: 0.14, rcv: 0.30, mdf: 0.12, trp: 0.030 },
-    "忍者": { mhp: 0.80, atk: 0.10, hit: 0.22, cnt: 1.00, crt: 1.00, def: 0.10, eva: 0.14, mat: 0.09, rcv: 0.15, mdf: 0.08, trp: 0.030 },
-    "君主": { mhp: 1.10, atk: 0.10, hit: 0.15, cnt: 1.00, crt: 1.00, def: 0.16, eva: 0.04, mat: 0.05, rcv: 0.25, mdf: 0.08, trp: 0.005 },
-    "ロイヤルライン": { mhp: 0.85, atk: 0.08, hit: 0.10, cnt: 1.00, crt: 1.00, def: 0.10, eva: 0.08, mat: 0.10, rcv: 0.20, mdf: 0.08, trp: 0.005 },
+    "戦士": { mhp: 1.20, atk: 0.10, hit: 0.15, cnt: 1.00, crt: 0, def: 0.14, eva: 0.04, mat: 0.06, rcv: 0.17, mdf: 0.08, trp: 0.005 },
+    "剣士": { mhp: 1.00, atk: 0.11, hit: 0.25, cnt: 1.00, crt: 0, def: 0.12, eva: 0.08, mat: 0.06, rcv: 0.15, mdf: 0.04, trp: 0.005 },
+    "盗賊": { mhp: 0.75, atk: 0.08, hit: 0.20, cnt: 1.00, crt: 0.012, def: 0.06, eva: 0.12, mat: 0.06, rcv: 0.15, mdf: 0.04, trp: 0.050 },
+    "僧侶": { mhp: 0.65, atk: 0.07, hit: 0.05, cnt: 1.00, crt: 0, def: 0.08, eva: 0.04, mat: 0.09, rcv: 0.40, mdf: 0.12, trp: 0.005 },
+    "魔法使い": { mhp: 0.60, atk: 0.03, hit: 0.10, cnt: 1.00, crt: 0, def: 0.02, eva: 0.08, mat: 0.15, rcv: 0.17, mdf: 0.08, trp: 0.005 },
+    "狩人": { mhp: 0.90, atk: 0.10, hit: 0.10, cnt: 1.00, crt: 0.016, def: 0.08, eva: 0.08, mat: 0.08, rcv: 0.15, mdf: 0.04, trp: 0.015 },
+    "修道者": { mhp: 0.85, atk: 0.08, hit: 0.10, cnt: 1.00, crt: 0, def: 0.10, eva: 0.08, mat: 0.10, rcv: 0.20, mdf: 0.08, trp: 0.005 },
+    "侍": { mhp: 0.90, atk: 0.20, hit: 0.15, cnt: 1.00, crt: 0, def: 0.08, eva: 0.06, mat: 0.07, rcv: 0.16, mdf: 0.04, trp: 0.005 },
+    "剣聖": { mhp: 1.00, atk: 0.09, hit: 0.28, cnt: 1.00, crt: 0, def: 0.12, eva: 0.10, mat: 0.07, rcv: 0.15, mdf: 0.04, trp: 0.005 },
+    "秘法剣士": { mhp: 1.00, atk: 0.10, hit: 0.19, cnt: 1.00, crt: 0, def: 0.12, eva: 0.08, mat: 0.12, rcv: 0.25, mdf: 0.08, trp: 0.005 },
+    "賢者": { mhp: 0.85, atk: 0.08, hit: 0.13, cnt: 1.00, crt: 0, def: 0.10, eva: 0.06, mat: 0.14, rcv: 0.30, mdf: 0.12, trp: 0.030 },
+    "忍者": { mhp: 0.80, atk: 0.10, hit: 0.22, cnt: 1.00, crt: 0.02, def: 0.10, eva: 0.14, mat: 0.09, rcv: 0.15, mdf: 0.08, trp: 0.030 },
+    "君主": { mhp: 1.10, atk: 0.10, hit: 0.15, cnt: 1.00, crt: 0, def: 0.16, eva: 0.04, mat: 0.05, rcv: 0.25, mdf: 0.08, trp: 0.005 },
+    "ロイヤルライン": { mhp: 0.85, atk: 0.08, hit: 0.10, cnt: 1.00, crt: 0, def: 0.10, eva: 0.08, mat: 0.10, rcv: 0.20, mdf: 0.08, trp: 0.005 },
 };
 
 /**
