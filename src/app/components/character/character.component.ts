@@ -416,6 +416,7 @@ export class CharacterComponent implements OnInit {
             const dialogRef = this.dialog.open(SearchItemDialogComponent, SearchItemDialogComponent.DEFAULT_OPTIONS);
             dialogRef.componentInstance.filter = {
                 titleLimit: Const.TitleLimitFlg.maxOnly,
+                acquisition: Const.AcquisitionFlg.all,
                 showNormalItem: true,
                 showRareTitledItem: true,
                 regexSkillName: skill.name
