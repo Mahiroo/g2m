@@ -2,6 +2,7 @@ import * as _ from 'underscore';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import * as g2 from '../../models';
+import * as Const from '../../common/const';
 import { PARAMETER_KEYS, ItemFieldKeys } from '../../common/const';
 import { isSameText } from '../../common/function';
 import { CharacterManagerService, ItemUtilityService, ManagerService, IFilter } from '../../services'
@@ -70,6 +71,14 @@ export class CharacterComponent implements OnInit {
      * 環境設定.
      */
     settings: ICharacterComponentSettings;
+    /**
+     * 全スキル表示フラグ.
+     */
+    showAllSkill: boolean;
+    /**
+     * 所有スキル件数.
+     */
+    skillCount: number;
     /**
      * 更新フラグ.
      */
@@ -155,6 +164,7 @@ export class CharacterComponent implements OnInit {
         const result: string[] = ['skill-item'];
         if (skill.static) { result.push('static'); }
         if (skill.count > 1) { result.push('duplicate'); }
+        if (!skill.count) { result.push('none'); }
         if (this.selectedSkill === skill) { result.push('selected'); }
         if (this.selectedItem) {
             if (_.contains(this.selectedItem.skills, skill.name)) { result.push('highlight'); }
@@ -297,13 +307,15 @@ export class CharacterComponent implements OnInit {
      */
     refresh(): void {
         // キャラクター再計算
-        this.charManager.recalc(this.editCharacter);
+        this.charManager.recalc(this.editCharacter, this.showAllSkill);
         // 装備品倍率を配列に変換
         this.equipmentRatios = _.chain(this.editCharacter.itemRatio.equipmentRatio).keys().map(key => {
             return { key: key, value: this.editCharacter.itemRatio.equipmentRatio[key] };
         }).value();
         // 所持スキルを配列に変換
         this.attachedSkills = _.chain(this.editCharacter.skills).toArray().sortBy(skill => skill.seq).value();
+        this.skillCount = 0;
+        _.chain(this.editCharacter.skills).filter(skill => !!(skill.count)).forEach(skill => this.skillCount++);
         // 装備アイテムリストを取得
         this.attachedItems = _.map(this.charManager.getAllItems(this.editCharacter), item => this.itemUtil.applyRatio(item, this.editCharacter.itemRatio));
         this.attachedItemParams = {};
@@ -398,7 +410,23 @@ export class CharacterComponent implements OnInit {
      */
     selectSkill(skill: g2.IAttachedSkill): void {
         this.selectedItem = null;
-        this.selectedSkill = (this.selectedSkill === skill) ? null : skill;
+        if (skill.count) {
+            this.selectedSkill = (this.selectedSkill === skill) ? null : skill;
+        } else {
+            const dialogRef = this.dialog.open(SearchItemDialogComponent, SearchItemDialogComponent.DEFAULT_OPTIONS);
+            dialogRef.componentInstance.filter = {
+                titleLimit: Const.TitleLimitFlg.maxOnly,
+                showNormalItem: true,
+                showRareTitledItem: true,
+                regexSkillName: skill.name
+            };
+            dialogRef.afterClosed().subscribe(result => {
+                if (!result) { return; }
+                this.unionEquipmentItems(result);
+                this.updated = true;
+                this.refresh();
+            });
+        }
     }
 
     /**

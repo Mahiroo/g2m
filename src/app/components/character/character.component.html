@@ -2,8 +2,8 @@
     <section class="base-info-pane">
         <section>
             <mat-form-field class="character-name">
-                <input matInput type="text" class="g2-ime" placeholder="キャラクター保存名" [(ngModel)]="editCharacter.name" (change)="updated=true"
-                />
+                <input matInput type="text" class="g2-ime" placeholder="キャラクター保存名" [(ngModel)]="editCharacter.name"
+                    (change)="updated=true" />
             </mat-form-field>
             <button mat-button (click)="openEditPartsDialog()">
                 <mat-icon>edit</mat-icon>
@@ -28,7 +28,8 @@
                         <ng-template ngFor let-key [ngForOf]="BASE_PARAMS">
                             <td class="param-value">
                                 <span>{{editCharacter[key]}}</span>
-                                <span [ngClass]="{'limit-over': (editCharacter.additionalParams[key] > 10)}">({{editCharacter.additionalParams[key] | paramValue:key }})</span>
+                                <span
+                                    [ngClass]="{'limit-over': (editCharacter.additionalParams[key] > 10)}">({{editCharacter.additionalParams[key] | paramValue:key }})</span>
                             </td>
                         </ng-template>
                         <td>{{editCharacter.growthRatio | number:'1.2-2'}}倍</td>
@@ -98,10 +99,12 @@
                         <button mat-icon-button color="primary" (click)="openSearchItemDialog()" matTooltip="検索">
                             <mat-icon>search</mat-icon>
                         </button>
-                        <button mat-icon-button color="primary" (click)="openEditItemDialog()" matTooltip="編集" [disabled]="(!selectedItem || selectedItem.static)">
+                        <button mat-icon-button color="primary" (click)="openEditItemDialog()" matTooltip="編集"
+                            [disabled]="(!selectedItem || selectedItem.static)">
                             <mat-icon>edit</mat-icon>
                         </button>
-                        <button mat-icon-button color="warn" (click)="removeSelectedItem()" matTooltip="外す" [disabled]="(!selectedItem || selectedItem.static)">
+                        <button mat-icon-button color="warn" (click)="removeSelectedItem()" matTooltip="外す"
+                            [disabled]="(!selectedItem || selectedItem.static)">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </div>
@@ -109,8 +112,8 @@
             </header>
             <section class="equipment-list">
                 <ng-template ngFor let-item [ngForOf]="attachedItems">
-                    <div [ngClass]="getEquipmentItemCssClass(item)" (click)="selectEquipmentItem(item, $event)" (dblclick)="openEditItemDialog(item, $event)"
-                        [matTooltip]="getBeingUsedCharacters(item)">
+                    <div [ngClass]="getEquipmentItemCssClass(item)" (click)="selectEquipmentItem(item, $event)"
+                        (dblclick)="openEditItemDialog(item, $event)" [matTooltip]="getBeingUsedCharacters(item)">
                         <span class="item-name">{{item.displayName}}</span>
                         <span class="ratio" *ngIf="!item.static">{{getItemRatio(item) | number:'1.2-2'}}倍</span>
                     </div>
@@ -119,7 +122,13 @@
         </section>
         <section class="skill-list-pane">
             <header style="display:flex;width:100%;">
-                <div style="flex: 1 1 auto">スキル({{attachedSkills.length}}個所持)</div>
+                <div style="flex: 1 1 auto">
+                    スキル({{skillCount}}個所持)
+                    <button mat-button (click)="showAllSkill = !showAllSkill;refresh();"
+                        [ngClass]="{'mat-raised-button':true, 'mat-primary': showAllSkill}">
+                        <span>所有スキルのみ</span>
+                    </button>
+                </div>
                 <div>
                     凡例：
                     <span class="skill-item static example">固定スキル</span>

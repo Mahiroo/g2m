@@ -19,9 +19,9 @@ export class CharacterUtilityService {
      * スキル情報集約.
      * @param character キャラクター情報
      */
-    collectSkills(character: g2.ICharacter): g2.ICharacter {
+    collectSkills(character: g2.ICharacter, allSkill: boolean = false): g2.ICharacter {
 
-        const collected: _.Dictionary<g2.IAttachedSkill> = {};
+        let collected: _.Dictionary<g2.IAttachedSkill> = {};
         const mergeSkills = (skills: string[], stat?: boolean) => {
             _.forEach(skills, skill => {
                 if (!this.manager.skills[skill]) { console.warn(`skill [${skill}] is not exists.`); return; }
@@ -33,6 +33,14 @@ export class CharacterUtilityService {
                 collected[skill].count += 1;
             });
         };
+
+        if (allSkill) {
+            // 全スキル取得の場合
+            _.forEach(this.manager.skills, skill => {
+                collected[skill.name] = _.clone(skill);
+                collected[skill.name].count = 0;
+            });
+        }
 
         // 固定スキルの集約
         if (character.species) { mergeSkills(this.manager.species[character.species].skills, true); }
@@ -109,9 +117,9 @@ export class CharacterUtilityService {
      * キャラクター情報再計算.
      * @param character キャラクター情報
      */
-    recalc(character: g2.ICharacter): g2.ICharacter {
+    recalc(character: g2.ICharacter, allSkill: boolean = false): g2.ICharacter {
         // スキル集約
-        this.collectSkills(character);
+        this.collectSkills(character, allSkill);
         // 基本能力値再計算
         this.recalcBaseParams(character);
         // アイテム装備可能数再計算
@@ -189,7 +197,7 @@ export class CharacterUtilityService {
         // 才能スキル抽出
         const aptitudes: _.Dictionary<{ aptitude?: boolean, lackOfTalent?: boolean }> = {};
         _.chain(character.skills)
-            .filter(skill => !!(skill.aptitude))
+            .filter(skill => skill.count && !!(skill.aptitude))
             .forEach((skill: g2.Skills.IAptitude) => {
                 if (!aptitudes[skill.aptitude.key]) { aptitudes[skill.aptitude.key] = {}; }
                 if (skill.aptitude.lackOfTalent) {
@@ -217,7 +225,7 @@ export class CharacterUtilityService {
         });
 
         // TODO : 変換スキル補正
-        const convertSkills: g2.Skills.IConvertParam[] = _.filter(character.skills, (skill: g2.Skills.IConvertParam) => !!(skill.convertParam));
+        const convertSkills: g2.Skills.IConvertParam[] = _.filter(character.skills, (skill: g2.Skills.IConvertParam) => skill.count && !!(skill.convertParam));
         _.forEach(convertSkills, skill => {
             _.forEach(skill.convertParam, detail => {
                 character[detail.toKey] += Math.floor(character[detail.fromKey]) * detail.rate;
@@ -316,7 +324,7 @@ export class CharacterUtilityService {
         let addition = 0;
         let isHalf = false;
         _.chain(character.skills)
-            .filter(skill => !!(skill.isEquipmentCount))
+            .filter(skill => (skill.count && !!(skill.isEquipmentCount)))
             .forEach(skill => {
                 if (skill.isEquipmentCount.capable) { master = EQUIPMENT_COUNT.CAPABLE; }
                 if (skill.isEquipmentCount.half) { isHalf = true; }
@@ -347,7 +355,7 @@ export class CharacterUtilityService {
         character.itemRatio = { equipmentRatio: equipmentRatio, itemRatios: itemRatios };
         // 装備倍率の集約
         _.chain(character.skills)
-            .filter((skill: g2.Skills.IEquipmentRatio) => !!skill.equipmentRatios)
+            .filter((skill: g2.Skills.IEquipmentRatio) => skill.count && !!skill.equipmentRatios)
             .map((skill: g2.Skills.IEquipmentRatio) => skill.equipmentRatios)
             .flatten()
             .sortBy((ratio: g2.Skills.IEquipmentRatioDetail) => {
@@ -363,7 +371,7 @@ export class CharacterUtilityService {
             });
         // 装備アイテム能力値倍率の集約
         _.chain(character.skills)
-            .filter((skill: g2.Skills.IItemRatio) => !!skill.itemRatios)
+            .filter((skill: g2.Skills.IItemRatio) => skill.count && !!skill.itemRatios)
             .map((skill: g2.Skills.IItemRatio) => skill.itemRatios)
             .flatten()
             .forEach((ratio: g2.Skills.IItemRatioDetail) => {
@@ -379,7 +387,7 @@ export class CharacterUtilityService {
     recalcGrowthRatio(character: g2.ICharacter): void {
         character.growthRatio = 1;
         _.forEach(character.skills, (skill: g2.Skills.IGrowthRatio) => {
-            if (skill.growthRatio) { character.growthRatio *= skill.growthRatio; }
+            if (skill.count && skill.growthRatio) { character.growthRatio *= skill.growthRatio; }
         });
         // character.growthRatio *= 100;
         // character.growthRatio = Math.round(character.growthRatio);

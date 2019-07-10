@@ -183,8 +183,8 @@ export class CharacterManagerService {
      * キャラクター情報再計算.
      * @param character キャラクター情報
      */
-    recalc(character: g2.ICharacter): g2.ICharacter {
-        return this.utility.recalc(character);
+    recalc(character: g2.ICharacter, allSkill: boolean = false): g2.ICharacter {
+        return this.utility.recalc(character, allSkill);
     }
 
     /**

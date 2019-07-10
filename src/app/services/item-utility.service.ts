@@ -236,8 +236,8 @@ export class ItemUtilityService {
         if (!filter) { return baseItems; }
 
         // 名称フィルタ生成
-        const regexItemName: RegExp = (filter.regexItemName) ? new RegExp(filter.regexItemName.replace(/([\[\]])/g, '\\$1'), 'gi') : null;
-        const regexSkillName: RegExp = (filter.regexSkillName) ? new RegExp(filter.regexSkillName.replace(/([\[\]])/g, '\\$1'), 'gi') : null;
+        const regexItemName: RegExp = (filter.isRegex && filter.regexItemName) ? new RegExp(filter.regexItemName.replace(/([\[\]])/g, '\\$1'), 'gi') : null;
+        const regexSkillName: RegExp = (filter.isRegex && filter.regexSkillName) ? new RegExp(filter.regexSkillName.replace(/([\[\]])/g, '\\$1'), 'gi') : null;
 
         return _.chain(baseItems)
             .union(_.toArray(this.manager.jobs), _.toArray(this.manager.species))
@@ -271,6 +271,8 @@ export class ItemUtilityService {
                 if (regexItemName) {
                     regexItemName.lastIndex = 0;
                     if (!regexItemName.exec(item.displayName)) { return false; }
+                } else {
+                    if (filter.regexItemName && item.displayName.indexOf(filter.regexItemName) < 0) { return false; }
                 }
                 // スキル名称フィルタ
                 if (regexSkillName) {
@@ -279,6 +281,11 @@ export class ItemUtilityService {
                         return regexSkillName.exec(skill);
                     });
                     if (!foundSkill) { return false; }
+                } else {
+                    if (filter.regexSkillName) {
+                        const foundSkill: string = _.find(item.skills, skill => skill.indexOf(filter.regexSkillName) >= 0);
+                        if (!foundSkill) { return false; }
+                    }
                 }
 
                 // アイテム合成フィルタ
@@ -566,6 +573,10 @@ export interface IFilter {
      * 称号継承のみ表示フラグ.
      */
     inheritanceOnly?: boolean;
+    /**
+     * 正規表現検索フラグ.
+     */
+    isRegex?: boolean;
     /**
      * 所有アイテムのみフラグ.
      */
