@@ -145,8 +145,10 @@ export class CharacterManagerService {
             if (ignoreId && (ignoreId === character.id)) { return false; }
             const findItem = _.find(character.equipments, equip => {
                 if (equip.n !== item.name) { return false; }
-                if (equip.t !== item.title) { return false; }
                 if (equip.r !== item.rareTitle) { return false; }
+                if (equip.t !== item.title) {
+                    if (!equip.t && item.title !== '(称号無し)') { return false; }
+                }
                 return true;
             });
             if (findItem) { result.push(character.name); }
