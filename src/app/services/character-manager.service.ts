@@ -99,6 +99,22 @@ export class CharacterManagerService {
     }
 
     /**
+     * 装備中アイテムリスト取得.
+     */
+    getAtatchedItemNameList(): _.Dictionary<string[]> {
+        const result: _.Dictionary<string[]> = {};
+        _.forEach(this.characters, character => {
+            _.forEach(character.equipments, equipment => {
+                const item: g2.IItem = this.itemUtil.getItem(equipment.n, equipment.t, equipment.r);
+                if (!item) { return; }
+                if (!result[item.displayName]) { result[item.displayName] = []; }
+                result[item.displayName].push(character.name);
+            });
+        });
+        return result;
+    }
+
+    /**
      * ビルド構成情報取得.
      */
     getBuildPartsInfo(character: g2.ICharacter): string {

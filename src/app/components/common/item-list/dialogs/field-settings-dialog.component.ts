@@ -41,7 +41,7 @@ export class FieldSettingsDialogComponent implements OnInit {
         this._columns.children = [
             {
                 key: '基本情報',
-                children: _.map(['category', 'price', 'updateDate',], (key): ICheckboxTreeItem => {
+                children: _.map(['category', 'price', 'updateDate', 'atachedCharacters'], (key): ICheckboxTreeItem => {
                     return { key: key, checked: _.contains(this.columns, key) }
                 })
             },

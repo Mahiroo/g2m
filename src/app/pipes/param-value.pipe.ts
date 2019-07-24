@@ -1,3 +1,4 @@
+import * as _ from 'underscore';
 import { Pipe, PipeTransform } from '@angular/core';
 import * as Const from '../common/const';
 
@@ -25,8 +26,11 @@ export class ParamValuePipe implements PipeTransform {
                 const dateText = [value.getFullYear(), ("00" + (value.getMonth() + 1)).slice(-2), ("00" + value.getDate()).slice(-2)].join('/');
                 const timeText = [('00' + value.getHours()).slice(-2), ('00' + value.getMinutes()).slice(-2), ('00' + value.getSeconds()).slice(-2)].join(':');
                 return `${dateText} ${timeText}`;
+            case 'list':
+                let val: Array<any> = value;
+                if (!value || !val.length) { return null; }
+                return val.join('/');
         }
-        return value;
-    }
 
+    }
 }

@@ -305,7 +305,13 @@ export class ItemUtilityService {
                 return true;
             })
             .sortBy(item => item.order)
-            .map(item => this.getClone(item))
+            .map(item => {
+                const result: g2.IInventory = this.getClone(item);
+                if (filter.atachedItemList && filter.atachedItemList[item.displayName]) {
+                    result.atachedCharacters = filter.atachedItemList[item.displayName];
+                }
+                return result;
+            })
             .value();
     }
 
@@ -557,6 +563,10 @@ export interface IFilter {
      * すべての称号を表示.
      */
     allTitles?: boolean;
+    /**
+     * 装備中アイテムリスト.
+     */
+    atachedItemList?: _.Dictionary<string[]>;
     /**
      * 表示アイテム種別リスト.
      */

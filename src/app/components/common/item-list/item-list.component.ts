@@ -22,6 +22,7 @@ export class ItemListComponent implements OnInit {
     @Input() set columns(value: string[]) {
         this._columns = _.filter(Const.ItemFieldKeys.All, column => {
             switch (column) {
+                case 'atachedCharacters':
                 case 'displayName':
                 case 'skills':
                     return false;
@@ -29,9 +30,11 @@ export class ItemListComponent implements OnInit {
             return _.contains(value, column);
         });
         this._showSkills = _.contains(value, 'skills');
+        this._showAtachedCharacters = _.contains(value, 'atachedCharacters');
     }
     _columns: string[];
     _showSkills: boolean;
+    _showAtachedCharacters: boolean;
 
     /**
      * 強調表示スキル正規表現.

@@ -2,8 +2,9 @@ import * as _ from 'underscore';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef, MatTabChangeEvent, MatPaginatorIntl, PageEvent } from '@angular/material';
 import * as g2 from '../../../models';
-import { ItemUtilityService, IFilter, ManagerService } from '../../../services'
+import { ItemUtilityService, IFilter, ManagerService, CharacterManagerService } from '../../../services'
 import { FieldSettingsDialogComponent, ItemFilterDialogComponent } from '../../common/item-list';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
     templateUrl: './search-item-dialog.component.html',
@@ -41,7 +42,8 @@ export class SearchItemDialogComponent implements OnInit {
      * コンストラクタ.
      * @param charUtil
      */
-    constructor(matPaginatorIntl: MatPaginatorIntl, public dialogRef: MatDialogRef<SearchItemDialogComponent>, private dialog: MatDialog, private manager: ManagerService, private itemUtil: ItemUtilityService) {
+    constructor(matPaginatorIntl: MatPaginatorIntl, public dialogRef: MatDialogRef<SearchItemDialogComponent>, private dialog: MatDialog,
+        private manager: ManagerService, private itemUtil: ItemUtilityService, private characterManager: CharacterManagerService) {
         matPaginatorIntl.itemsPerPageLabel = '表示件数:';
         matPaginatorIntl.nextPageLabel = '次のページ';
         matPaginatorIntl.previousPageLabel = '前のページ';
@@ -116,6 +118,7 @@ export class SearchItemDialogComponent implements OnInit {
      * 表示更新.
      */
     refresh(): void {
+        this.filter.atachedItemList = this.characterManager.getAtatchedItemNameList();
         const newItems = this.itemUtil.getInventories(this.filter);
         this.items = newItems;
     }

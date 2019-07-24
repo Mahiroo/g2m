@@ -404,6 +404,31 @@ export class CharacterComponent implements OnInit {
         }, 300);
     }
 
+
+    searchItemBySkill(skill: g2.IAttachedSkill): void {
+        const filterDialogRef = this.dialog.open(ItemFilterDialogComponent, ItemFilterDialogComponent.DEFAULT_OPTIONS);
+        const newFilter: IFilter = JSON.parse(JSON.stringify(this.filter));
+        newFilter.regexSkillName = skill.name;
+        filterDialogRef.componentInstance.filter = newFilter;
+
+        filterDialogRef.afterClosed().subscribe(filterResult => {
+            if (!filterResult) { return; }
+
+            const dialogRef = this.dialog.open(SearchItemDialogComponent, SearchItemDialogComponent.DEFAULT_OPTIONS);
+            dialogRef.componentInstance.filter = filterResult;
+            dialogRef.afterClosed().subscribe(result => {
+                this.filter = dialogRef.componentInstance.filter;
+                this.manager.localStorage.set(this.LSKEY_FILTER, this.filter);
+                if (!result) { return; }
+                this.unionEquipmentItems(result);
+                this.selectedItem = null;
+                this.selectedSkill = null;
+                this.updated = true;
+                this.refresh();
+            });
+        });
+    }
+
     /**
      * スキル選択.
      * @param skill スキル情報
@@ -412,21 +437,6 @@ export class CharacterComponent implements OnInit {
         this.selectedItem = null;
         if (skill.count) {
             this.selectedSkill = (this.selectedSkill === skill) ? null : skill;
-        } else {
-            const dialogRef = this.dialog.open(SearchItemDialogComponent, SearchItemDialogComponent.DEFAULT_OPTIONS);
-            dialogRef.componentInstance.filter = {
-                titleLimit: Const.TitleLimitFlg.maxOnly,
-                acquisition: Const.AcquisitionFlg.all,
-                showNormalItem: true,
-                showRareTitledItem: true,
-                regexSkillName: skill.name
-            };
-            dialogRef.afterClosed().subscribe(result => {
-                if (!result) { return; }
-                this.unionEquipmentItems(result);
-                this.updated = true;
-                this.refresh();
-            });
         }
     }
 

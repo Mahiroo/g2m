@@ -5,7 +5,11 @@
                 選択
             </div>
             <div class="cell displayName">
-                <span [ngClass]="getHeaderCssClass('displayName')" (click)="sort('displayName')">{{'displayName' | paramShortName}}</span>
+                <span [ngClass]="getHeaderCssClass('displayName')"
+                    (click)="sort('displayName')">{{'displayName' | paramShortName}}</span>
+            </div>
+            <div class="cell atachedCharacters" *ngIf="_showAtachedCharacters">
+                {{'atachedCharacters' | paramShortName}}
             </div>
         </div>
         <div class="row-detail">
@@ -28,6 +32,10 @@
                 </div>
                 <div class="cell displayName" [ngClass]="{'rare-titled': !!(item.rareTitle)}">
                     <span (click)="openItemInfoDialog(item)">{{item.displayName}}{{item.restricts | restricts}}</span>
+                </div>
+                <div class="cell atachedCharacters" [ngClass]="{'rare-titled': !!(item.rareTitle)}"
+                    *ngIf="_showAtachedCharacters">
+                    {{item.atachedCharacters | paramValue:'atachedCharacters'}}
                 </div>
             </div>
             <div class="row-detail">

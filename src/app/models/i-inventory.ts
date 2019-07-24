@@ -5,6 +5,10 @@ import { IItem } from './i-item';
  */
 export interface IInventory extends IItem {
     /**
+     * 装備中キャラクターリスト.
+     */
+    atachedCharacters?: string[];
+    /**
      * 掘り出し物フラグ.
      */
     isAcquisition?: boolean;

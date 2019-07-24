@@ -2,7 +2,7 @@
  * 項目定義インタフェース.
  */
 export interface IFieldInfo {
-    type: 'other' | 'num' | 'signedNum' | 'separatedNum' | 'date';
+    type: 'other' | 'num' | 'signedNum' | 'separatedNum' | 'date' | 'list';
     name: string;
     shortName?: string;
     symbole?: string;
@@ -45,7 +45,8 @@ export const Fields: IFields = {
     'agi': { type: 'signedNum', name: '敏捷', shortName: '敏捷', symbole: '敏' },
     'luc': { type: 'signedNum', name: '運', shortName: '運', symbole: '運' },
     'skills': { type: 'other', name: 'スキル', shortName: 'スキル', symbole: '' },
-    'updateDate': { type: 'date', name: '更新日時', shortName: '更新', symbole: '' }
+    'updateDate': { type: 'date', name: '更新日時', shortName: '更新', symbole: '' },
+    'atachedCharacters': { type: 'list', name: '装備中キャラクター', shortName: '装備中', symbole: '' },
 };
 
 /**
@@ -56,11 +57,11 @@ export const ItemFieldKeys = {
         'displayName', 'category', 'price',
         'atk', 'hit', 'crt', 'cnt', 'def', 'eva', 'mat', 'rcv', 'mdf', 'trp', 'mhp', 'equ',
         'str', 'int', 'men', 'vit', 'agi', 'luc',
-        'skills', 'updateDate',
+        'skills', 'atachedCharacters', 'updateDate',
     ],
     Base: ['str', 'int', 'men', 'vit', 'agi', 'luc'],
     Battle: ['atk', 'hit', 'crt', 'cnt', 'def', 'eva', 'mat', 'rcv', 'mdf', 'trp', 'mhp'],
-    Common: ['displayName', 'category', 'price', 'equ', 'updateDate'],
+    Common: ['displayName', 'category', 'price', 'equ', 'atachedCharacters', 'updateDate'],
     EquipmentRatio: ['atk', 'hit', 'cnt', 'def', 'eva', 'mat', 'rcv', 'mdf', 'trp', 'mhp'],
     ItemRatio: ['atk', 'hit', 'crt', 'cnt', 'def', 'eva', 'mat', 'rcv', 'mdf', 'trp', 'mhp'],
     Skills: ['skills'],

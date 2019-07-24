@@ -125,7 +125,7 @@
                 <div style="flex: 1 1 auto">
                     スキル({{skillCount}}個所持)
                     <button mat-button (click)="showAllSkill = !showAllSkill;refresh();"
-                        [ngClass]="{'mat-raised-button':true, 'mat-primary': showAllSkill}">
+                        [ngClass]="{'mat-raised-button':true, 'mat-primary': !showAllSkill}">
                         <span>所有スキルのみ</span>
                     </button>
                 </div>
@@ -137,7 +137,8 @@
             </header>
             <section class="skill-list">
                 <ng-template ngFor let-skill [ngForOf]="attachedSkills">
-                    <span [ngClass]="getSkillItemCssClass(skill)" (click)="selectSkill(skill)">{{skill.name}}</span>
+                    <span [ngClass]="getSkillItemCssClass(skill)" (click)="selectSkill(skill)"
+                        (dblclick)="searchItemBySkill(skill)">{{skill.name}}</span>
                 </ng-template>
             </section>
         </section>
